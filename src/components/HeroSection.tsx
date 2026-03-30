@@ -103,15 +103,18 @@ export function HeroSection({ onStart }: HeroSectionProps) {
       {/* Course & Image Section */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.8 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.1 }}
+        transition={{ duration: 0.7 }}
         className="mt-14 max-w-3xl w-full glass-strong rounded-3xl overflow-hidden"
       >
-        <img
-          src={heroBg}
-          alt="Industrial landscape of Uttar Pradesh"
-          className="w-full object-contain rounded-t-3xl"
-        />
+        <div className="w-full aspect-video bg-muted/30">
+          <img
+            src={heroBg}
+            alt="Industrial landscape of Uttar Pradesh"
+            className="w-full h-full object-cover"
+          />
+        </div>
         <div className="p-6 md:p-8">
           <h2 className="text-xl md:text-2xl font-bold text-foreground mb-3" style={{ fontFamily: "'DM Serif Display', serif" }}>
             Business Law & Industrial Policy
