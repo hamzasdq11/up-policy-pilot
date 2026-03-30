@@ -101,6 +101,24 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         ))}
       </motion.div>
 
+      {/* Academic Credit */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 1.2 }}
+        className="mt-16 mb-8 glass rounded-2xl px-6 py-5 max-w-lg w-full text-center space-y-1"
+      >
+        <p className="text-[11px] text-muted-foreground/70 italic leading-relaxed">
+          Engineered in partial fulfilment of the requirements for the AI Assignment under the course <span className="font-semibold text-foreground/70">Business Law</span>
+        </p>
+        <p className="text-xs font-semibold text-foreground/80 tracking-wide">Indian Institute of Management Ranchi</p>
+        <p className="text-[11px] text-muted-foreground/70">Faculty: <span className="font-medium text-foreground/70">Prof. Angshuman Hazarika</span></p>
+        <div className="pt-2 border-t border-border/40 mt-2">
+          <p className="text-xs font-bold text-foreground/85 tracking-tight">Mohammad Hamza Siddiqui</p>
+          <p className="text-[10px] text-muted-foreground/60 font-medium">IPM29-24</p>
+        </div>
+      </motion.div>
+
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent pointer-events-none" />
     </div>
