@@ -88,58 +88,55 @@ export default function Index() {
     if (!trimmedQuery || isStreaming) return;
 
     const userMsg: Message = { id: Date.now().toString(), role: "user", content: trimmedQuery };
-    
-    setMessages((prev) => {
-      const updated = [...prev, userMsg];
-      
-      // Build chat history from the updated messages (excluding welcome)
-      const chatHistory: ChatMsg[] = updated
-        .filter((m) => !m.id.startsWith("welcome"))
-        .map((m) => ({ role: m.role, content: m.content }));
 
-      const assistantId = (Date.now() + 1).toString();
-      let assistantContent = "";
+    // 1. Compute chat history from current state (outside setter)
+    const chatHistory: ChatMsg[] = messages
+      .filter((m) => !m.id.startsWith("__welcome__"))
+      .map((m) => ({ role: m.role, content: m.content }));
+    chatHistory.push({ role: "user", content: trimmedQuery });
 
-      abortRef.current = new AbortController();
-
-      streamChat({
-        messages: chatHistory,
-        model: selectedModel,
-        signal: abortRef.current.signal,
-        onDelta: (chunk) => {
-          assistantContent += chunk;
-          setMessages((prev) => {
-            const last = prev[prev.length - 1];
-            if (last?.id === assistantId) {
-              return prev.map((m) =>
-                m.id === assistantId ? { ...m, content: assistantContent } : m
-              );
-            }
-            return [...prev, { id: assistantId, role: "assistant", content: assistantContent }];
-          });
-        },
-        onDone: () => {
-          setIsStreaming(false);
-          abortRef.current = null;
-        },
-        onError: (error) => {
-          setIsStreaming(false);
-          abortRef.current = null;
-          toast({ title: "Error", description: error, variant: "destructive" });
-          setMessages((prev) => [
-            ...prev,
-            { id: (Date.now() + 2).toString(), role: "assistant", content: `⚠️ **Error:** ${error}\n\nPlease try again or select a different model.` },
-          ]);
-        },
-      });
-
-      return updated;
-    });
-
+    // 2. Update state before starting stream
+    setMessages((prev) => [...prev, userMsg]);
     setIsStreaming(true);
     setShowQuickActions(false);
     setLastQuery(trimmedQuery);
-  }, [selectedModel, toast, isStreaming]);
+
+    // 3. Start stream outside setter
+    const assistantId = (Date.now() + 1).toString();
+    let assistantContent = "";
+    abortRef.current = new AbortController();
+
+    streamChat({
+      messages: chatHistory,
+      model: selectedModel,
+      signal: abortRef.current.signal,
+      onDelta: (chunk) => {
+        assistantContent += chunk;
+        setMessages((prev) => {
+          const last = prev[prev.length - 1];
+          if (last?.id === assistantId) {
+            return prev.map((m) =>
+              m.id === assistantId ? { ...m, content: assistantContent } : m
+            );
+          }
+          return [...prev, { id: assistantId, role: "assistant", content: assistantContent }];
+        });
+      },
+      onDone: () => {
+        setIsStreaming(false);
+        abortRef.current = null;
+      },
+      onError: (error) => {
+        setIsStreaming(false);
+        abortRef.current = null;
+        toast({ title: "Error", description: error, variant: "destructive" });
+        setMessages((prev) => [
+          ...prev,
+          { id: (Date.now() + 2).toString(), role: "assistant", content: `⚠️ **Error:** ${error}\n\nPlease try again or select a different model.` },
+        ]);
+      },
+    });
+  }, [messages, selectedModel, toast, isStreaming]);
 
   const handleReset = useCallback(() => {
     if (abortRef.current) abortRef.current.abort();
