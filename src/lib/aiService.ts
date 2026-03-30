@@ -122,7 +122,7 @@ const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
 export async function streamChat({
   messages,
-  model,
+  model: _userModel, // ignored — auto-selected internally
   onDelta,
   onDone,
   onError,
@@ -135,6 +135,22 @@ export async function streamChat({
   onError: (error: string) => void;
   signal?: AbortSignal;
 }) {
+  // Check if latest user message can be answered locally
+  const lastUserMsg = messages[messages.length - 1];
+  if (lastUserMsg?.role === "user") {
+    const localAnswer = tryLocalResponse(lastUserMsg.content);
+    if (localAnswer) {
+      // Simulate brief "thinking" then deliver locally
+      await new Promise((r) => setTimeout(r, 300 + Math.random() * 400));
+      onDelta(localAnswer);
+      onDone();
+      return;
+    }
+  }
+
+  // Auto-select best model for this query
+  const bestModel = autoSelectModel(lastUserMsg?.content || "");
+
   try {
     const resp = await fetch(CHAT_URL, {
       method: "POST",
@@ -142,7 +158,7 @@ export async function streamChat({
         "Content-Type": "application/json",
         Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
       },
-      body: JSON.stringify({ messages, model }),
+      body: JSON.stringify({ messages, model: bestModel }),
       signal,
     });
 
