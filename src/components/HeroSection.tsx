@@ -110,7 +110,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         <img
           src={heroBg}
           alt="Industrial landscape of Uttar Pradesh"
-          className="w-full h-48 md:h-64 object-cover"
+          className="w-full object-contain rounded-t-3xl"
         />
         <div className="p-6 md:p-8">
           <h2 className="text-xl md:text-2xl font-bold text-foreground mb-3" style={{ fontFamily: "'DM Serif Display', serif" }}>
