@@ -1,6 +1,8 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Building2, ArrowRight, TrendingUp, MapPin, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRef } from "react";
+import heroBg from "@/assets/hero-bg.jpeg";
 
 interface HeroSectionProps {
   onStart: () => void;
