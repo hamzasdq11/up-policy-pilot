@@ -16,7 +16,6 @@ const stats = [
 ];
 
 export function HeroSection({ onStart }: HeroSectionProps) {
-  return (
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
