@@ -1,81 +1,49 @@
 
 
-## Redesign: Black & White Theme (OpenAI/ChatGPT-inspired)
+## Fix: Race Condition & Anti-Pattern in Chat Message Handling
 
-Inspired by the ElevenLabs screenshot — clean, minimal, monochrome with strong typography and generous whitespace. No green, no colored accents. Pure black and white.
+### Problem
+`streamChat()` is called inside a `setMessages()` updater function — a React anti-pattern that can cause duplicate API calls in Strict Mode and creates a race condition with `setIsStreaming`.
 
-### Color System
-- **Background**: Pure white `#FFFFFF`
-- **Foreground/text**: Near-black `#0D0D0D`
-- **Muted text**: `#6B6B6B`
-- **Borders**: `#E5E5E5`
-- **Primary (buttons)**: Black `#0D0D0D`
-- **Primary foreground**: White
-- **Glass effects**: Simplified to subtle gray borders + light backgrounds (no colored tints)
-- **Accent**: Remove all green — everything monochrome
+### Changes
 
-### Files to Modify
+**File: `src/pages/Index.tsx` — `handleSend` function (lines 86-142)**
 
-**1. `src/index.css`** — Complete color token overhaul
-- All `--primary`, `--accent`, `--tint`, `--ring` → black/dark gray
-- `--muted`, `--border` → neutral grays
-- Remove green from all gradients, shadows, body background radials
-- `.gradient-cta` → solid black or dark gray gradient
-- `.text-gradient-hero` → solid black (no gradient needed)
-- `.glass` → white/95% opacity + thin gray border, minimal blur
-- `.shadow-float` → neutral black shadow, no color tint
-- Remove colored orb hues from body background
+Restructure to:
+1. Add user message to state first with `setMessages(prev => [...prev, userMsg])`
+2. Build `chatHistory` from current messages + new user message (computed outside setter)
+3. Call `streamChat()` outside the state setter
+4. Set `setIsStreaming(true)` *before* calling `streamChat()`
+5. Use a stable prefix like `__welcome__` for welcome message IDs to avoid accidental collisions
 
-**2. `src/components/AnimatedBackground.tsx`** — Remove or make grayscale
-- Change orb hues to 0 saturation (neutral gray orbs) for subtle movement without color
+```text
+Before:
+  setMessages((prev) => {
+    const updated = [...prev, userMsg];
+    // ... builds chatHistory inside setter
+    streamChat({ ... });  // ← side effect inside setter!
+    return updated;
+  });
+  setIsStreaming(true);  // ← runs AFTER stream starts
 
-**3. `src/components/HeroSection.tsx`** — Redesign layout inspired by ElevenLabs
-- Clean, left-aligned or centered large headline with strong contrast
-- Remove colored badge pulse dot or make it black
-- Stats cards: thin borders, no colored icons — use black icons
-- Course card: clean white card with subtle border, no glass-strong tinting
-- CTA button: solid black with white text, rounded
+After:
+  // 1. Compute chat history from current state
+  const chatHistory = messages
+    .filter(m => !m.id.startsWith("__welcome"))
+    .map(m => ({ role: m.role, content: m.content }));
+  chatHistory.push({ role: "user", content: trimmedQuery });
 
-**4. `src/pages/Index.tsx`** — Academic header + chat header
-- Header: clean white bar with thin bottom border
-- Chat header icon: black instead of green gradient
-- "AI Online" indicator: black dot instead of green pulse
-- Logo icon background: black instead of gradient-cta
+  // 2. Update state
+  setMessages(prev => [...prev, userMsg]);
+  setIsStreaming(true);  // ← before stream starts
 
-**5. `src/components/ChatMessage.tsx`** — Monochrome message styling
-- User messages: black background, white text (instead of green gradient)
-- Assistant: white/light gray card with black text
-- Table headers: light gray background, black text (not green)
-- Links: black with underline (not green)
-- List bullets: black (not green)
-- Section icon backgrounds: light gray (not green tint)
+  // 3. Start stream outside setter
+  abortRef.current = new AbortController();
+  streamChat({ messages: chatHistory, ... });
+```
 
-**6. `src/components/ChatInput.tsx`** — Monochrome input
-- Send button: solid black, white icon
-- Sparkles icon: gray
-- Focus ring: black/dark gray
+**Welcome message IDs**: Change `"welcome"` → `"__welcome__"` and `"welcome-" + Date.now()` → `"__welcome__" + Date.now()` to avoid collisions.
 
-**7. `src/components/ModelSelector.tsx`** — Monochrome dropdown
-- CPU icon: black/gray (not green)
-- Selected state: light gray background (not green tint)
-- Check icon: black
-
-**8. `src/components/QuickActionsGrid.tsx`** — Monochrome action cards
-- Icon backgrounds: light gray (not green)
-- Hover chevron: black
-
-**9. `src/components/KnowledgeSidebar.tsx`** — Monochrome sidebar
-- All `text-tint` → black/foreground
-- Hover states: light gray (not green)
-
-**10. `src/components/FollowUpSuggestions.tsx`** — Monochrome chips
-- Remove green hover effects, use gray/black
-
-### Typography
-- Keep DM Serif Display for headings + Inter for body (already good)
-- Increase font weight contrast between headings and body
-- Keep JetBrains Mono for code
-
-### Summary
-Every instance of green (`text-tint`, `bg-tint`, `bg-tint-light`, `gradient-cta`, `text-gradient-hero`, `shadow-float`) becomes black, dark gray, or light gray. The result is a clean, professional monochrome UI similar to OpenAI/ChatGPT's aesthetic.
+### Files Modified
+- `src/pages/Index.tsx` — refactor `handleSend`, update welcome ID prefixes
 
