@@ -17,7 +17,7 @@ const stats = [
 export function HeroSection({ onStart }: HeroSectionProps) {
   return (
     <div className="relative z-10 w-full">
-      <div className="mx-auto flex w-full max-w-4xl flex-col items-center px-4 sm:px-6 py-8 sm:py-12">
+      <div className="mx-auto flex w-full max-w-5xl flex-col items-center px-4 sm:px-6 py-8 sm:py-12">
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -83,7 +83,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-8 sm:mt-12 grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 max-w-2xl w-full"
+          className="mt-8 sm:mt-12 grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 max-w-3xl w-full"
         >
           {stats.map((stat, i) => (
             <motion.div
@@ -105,7 +105,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-8 sm:mt-12 max-w-2xl w-full rounded-xl sm:rounded-2xl border border-border bg-card p-4 sm:p-6"
+          className="mt-8 sm:mt-12 max-w-3xl w-full rounded-xl sm:rounded-2xl border border-border bg-card p-4 sm:p-6"
         >
           <h2 className="text-base sm:text-lg font-bold text-foreground mb-2" style={{ fontFamily: "'DM Serif Display', serif" }}>
             Business Law & Industrial Policy
@@ -120,7 +120,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.7 }}
-          className="mt-8 sm:mt-12 max-w-2xl w-full rounded-xl sm:rounded-2xl border border-border overflow-hidden"
+          className="mt-8 sm:mt-12 max-w-3xl w-full rounded-xl sm:rounded-2xl border border-border overflow-hidden"
         >
           <img
             src={heroBg}
