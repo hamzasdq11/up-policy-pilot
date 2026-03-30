@@ -35,7 +35,7 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
       transition={{ duration: 0.4 }}
       className="border-t border-border bg-background p-3 md:p-4 relative z-[55]"
     >
-      <div className="flex items-end gap-2 max-w-4xl mx-auto">
+      <div className="flex items-end gap-2 max-w-5xl mx-auto">
         <div className="flex-1 relative">
           <textarea
             ref={textareaRef}
@@ -63,7 +63,7 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
           <Send className="w-4 h-4" />
         </Button>
       </div>
-      <div className="flex items-center justify-between gap-3 max-w-4xl mx-auto mt-2 overflow-visible">
+      <div className="flex items-center justify-between gap-3 max-w-5xl mx-auto mt-2 overflow-visible">
         <ModelSelector selectedModel={selectedModel} onSelect={onModelChange} />
         <p className="text-[10px] text-muted-foreground/60 text-right">
           AI-powered • Not legal advice
