@@ -17,6 +17,11 @@ const stats = [
 export function HeroSection({ onStart }: HeroSectionProps) {
   return (
     <div className="relative flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12 z-10 overflow-y-auto min-h-0 flex-1">
+      {/* Light background image */}
+      <div
+        className="absolute inset-0 z-0 bg-cover bg-center opacity-[0.06]"
+        style={{ backgroundImage: `url(${heroBg})` }}
+      />
       {/* Badge */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
