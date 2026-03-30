@@ -105,7 +105,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-8 sm:mt-12 max-w-2xl w-full rounded-xl sm:rounded-2xl border border-border bg-card p-4 sm:p-6"
+          className="mt-8 sm:mt-12 max-w-3xl w-full rounded-xl sm:rounded-2xl border border-border bg-card p-4 sm:p-6"
         >
           <h2 className="text-base sm:text-lg font-bold text-foreground mb-2" style={{ fontFamily: "'DM Serif Display', serif" }}>
             Business Law & Industrial Policy
