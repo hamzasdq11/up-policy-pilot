@@ -117,7 +117,7 @@ export function ChatMessage({ role, content, isTyping }: ChatMessageProps) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
-      className={cn("flex gap-3 py-3 px-4 md:px-6", isUser ? "flex-row-reverse" : "flex-row")}
+      className={cn("flex gap-3 py-3 px-4 md:px-8", isUser ? "flex-row-reverse" : "flex-row")}
     >
       <div
         className={cn(

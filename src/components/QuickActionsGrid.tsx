@@ -18,10 +18,10 @@ export function QuickActionsGrid({ onSelect, visible }: QuickActionsGridProps) {
           transition={{ duration: 0.4 }}
           className="px-4 md:px-6 pb-4"
         >
-          <p className="text-xs text-muted-foreground mb-3 ml-12 font-medium uppercase tracking-wider">
+          <p className="text-xs text-muted-foreground mb-3 font-medium uppercase tracking-wider text-center">
             Quick Actions
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-2xl ml-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-3xl mx-auto">
             {quickActions.map((action, i) => (
               <motion.button
                 key={action.label}

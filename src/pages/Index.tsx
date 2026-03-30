@@ -221,7 +221,7 @@ export default function Index() {
 
             {/* Messages */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto scrollbar-thin">
-              <div className="max-w-5xl mx-auto py-2">
+              <div className="w-full max-w-none px-2 md:px-[10%] lg:px-[15%] py-2">
                 {messages.map((msg) => (
                   <ChatMessage key={msg.id} role={msg.role} content={msg.content} />
                 ))}
