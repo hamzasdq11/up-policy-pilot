@@ -13,7 +13,7 @@ export function AnimatedBackground() {
 
     const orbs: Array<{
       x: number; y: number; vx: number; vy: number;
-      radius: number; hue: number; saturation: number;
+      radius: number; lightness: number;
     }> = [];
 
     const resize = () => {
@@ -23,16 +23,14 @@ export function AnimatedBackground() {
     resize();
     window.addEventListener("resize", resize);
 
-    // Soft floating orbs
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 4; i++) {
       orbs.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.15,
-        vy: (Math.random() - 0.5) * 0.15,
-        radius: 150 + Math.random() * 200,
-        hue: 210 + Math.random() * 50,
-        saturation: 30 + Math.random() * 30,
+        vx: (Math.random() - 0.5) * 0.12,
+        vy: (Math.random() - 0.5) * 0.12,
+        radius: 180 + Math.random() * 220,
+        lightness: 92 + Math.random() * 6,
       });
     }
 
@@ -41,9 +39,9 @@ export function AnimatedBackground() {
 
       orbs.forEach((orb) => {
         const gradient = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.radius);
-        gradient.addColorStop(0, `hsla(${orb.hue}, ${orb.saturation}%, 70%, 0.06)`);
-        gradient.addColorStop(0.5, `hsla(${orb.hue}, ${orb.saturation}%, 60%, 0.03)`);
-        gradient.addColorStop(1, `hsla(${orb.hue}, ${orb.saturation}%, 60%, 0)`);
+        gradient.addColorStop(0, `hsla(0, 0%, ${orb.lightness}%, 0.08)`);
+        gradient.addColorStop(0.5, `hsla(0, 0%, ${orb.lightness}%, 0.04)`);
+        gradient.addColorStop(1, `hsla(0, 0%, ${orb.lightness}%, 0)`);
 
         ctx.beginPath();
         ctx.arc(orb.x, orb.y, orb.radius, 0, Math.PI * 2);

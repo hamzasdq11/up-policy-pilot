@@ -32,7 +32,7 @@ Share your **investment amount**, **sector**, and **preferred location** for per
 
 function AcademicHeader() {
   return (
-    <div className="w-full glass border-b border-border/50 px-4 py-2 shrink-0 z-50">
+    <div className="w-full bg-background border-b border-border px-4 py-2 shrink-0 z-50">
       <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
         {/* Left: Logo */}
         <div className="flex items-center gap-3 shrink-0">
@@ -175,18 +175,18 @@ export default function Index() {
             className="flex flex-col flex-1 relative z-10 min-h-0"
           >
             {/* Header */}
-            <header className="glass border-b-0 px-4 md:px-6 py-3 flex items-center gap-3 shrink-0">
+            <header className="bg-background border-b border-border px-4 md:px-6 py-3 flex items-center gap-3 shrink-0">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setSidebarOpen(true)}
-                className="rounded-xl hover:bg-secondary/60"
+                className="rounded-xl hover:bg-secondary"
               >
                 <Menu className="w-4 h-4 text-muted-foreground" />
               </Button>
 
-              <div className="w-10 h-10 rounded-2xl gradient-cta flex items-center justify-center shadow-float">
-                <Building2 className="w-5 h-5 text-primary-foreground" />
+              <div className="w-10 h-10 rounded-2xl bg-foreground flex items-center justify-center">
+                <Building2 className="w-5 h-5 text-background" />
               </div>
 
               <div className="flex-1 min-w-0">
@@ -206,14 +206,14 @@ export default function Index() {
                   variant="ghost"
                   size="icon"
                   onClick={handleReset}
-                  className="rounded-xl hover:bg-secondary/60"
+                  className="rounded-xl hover:bg-secondary"
                   title="New conversation"
                 >
                   <RotateCcw className="w-4 h-4 text-muted-foreground" />
                 </Button>
-                <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full glass text-xs text-muted-foreground">
-                  <Bot className="w-3 h-3 text-tint" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs text-muted-foreground">
+                  <Bot className="w-3 h-3 text-foreground/50" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-foreground animate-pulse" />
                   AI Online
                 </div>
               </div>

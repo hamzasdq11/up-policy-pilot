@@ -93,16 +93,16 @@ export function KnowledgeSidebar({ open, onClose, onTopicSelect }: KnowledgeSide
             animate={{ x: 0 }}
             exit={{ x: -320 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed left-0 top-0 bottom-0 w-80 glass-strong border-r-0 z-50 flex flex-col"
+            className="fixed left-0 top-0 bottom-0 w-80 bg-card border-r border-border z-50 flex flex-col shadow-glass-lg"
           >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 shrink-0">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
               <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-tint" />
+                <BookOpen className="w-4 h-4 text-foreground/60" />
                 <span className="text-sm font-semibold text-foreground">Policy Knowledge Base</span>
               </div>
               <button
                 onClick={onClose}
-                className="w-7 h-7 rounded-xl bg-secondary/60 flex items-center justify-center hover:bg-secondary transition-colors"
+                className="w-7 h-7 rounded-xl bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
               >
                 <X className="w-3.5 h-3.5 text-muted-foreground" />
               </button>
@@ -112,7 +112,7 @@ export function KnowledgeSidebar({ open, onClose, onTopicSelect }: KnowledgeSide
               {policyTopics.map((topic) => (
                 <div key={topic.category} className="mb-1">
                   <div className="flex items-center gap-2 px-4 py-2">
-                    <topic.icon className="w-3.5 h-3.5 text-tint" />
+                    <topic.icon className="w-3.5 h-3.5 text-foreground/50" />
                     <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       {topic.category}
                     </span>
@@ -126,7 +126,7 @@ export function KnowledgeSidebar({ open, onClose, onTopicSelect }: KnowledgeSide
                       }}
                       className={cn(
                         "w-full flex items-center gap-2 px-6 py-2 text-sm text-foreground/60",
-                        "hover:bg-tint-light hover:text-foreground transition-colors group text-left"
+                        "hover:bg-secondary hover:text-foreground transition-colors group text-left"
                       )}
                     >
                       <span className="flex-1">{item.label}</span>
@@ -137,11 +137,11 @@ export function KnowledgeSidebar({ open, onClose, onTopicSelect }: KnowledgeSide
               ))}
             </div>
 
-            <div className="px-4 py-3 border-t border-border/50 shrink-0">
+            <div className="px-4 py-3 border-t border-border shrink-0">
               <p className="text-[10px] text-muted-foreground leading-relaxed">
                 Based on the UP Industrial Investment & Employment Promotion Policy 2022.
                 For official documents, visit{" "}
-                <span className="text-tint font-medium">invest.up.gov.in</span>
+                <span className="text-foreground font-medium">invest.up.gov.in</span>
               </p>
             </div>
           </motion.aside>
