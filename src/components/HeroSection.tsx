@@ -123,5 +123,6 @@ export function HeroSection({ onStart }: HeroSectionProps) {
       >
         <img src={heroBg} alt="Business Law class with Prof. Angshuman Hazarika at IIM Ranchi" className="w-full h-auto object-cover" />
       </motion.div>
+    </div>
   );
 }
