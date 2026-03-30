@@ -66,7 +66,7 @@ const mdComponents = (isRisk: boolean) => ({
     <blockquote className="border-l-2 border-border pl-3 my-2 text-muted-foreground italic">{children}</blockquote>
   ),
   a: ({ children, href }: any) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="text-foreground underline underline-offset-2 hover:text-foreground/70 transition-colors">
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline underline-offset-2 hover:text-blue-800 transition-colors">
       {children}
     </a>
   ),
