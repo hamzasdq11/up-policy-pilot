@@ -169,7 +169,7 @@ serve(async (req) => {
     const selectedModel = ALLOWED_MODELS.includes(model) ? model : "google/gemini-3-flash-preview";
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
+    const timeout = setTimeout(() => controller.abort(), 45000); // 45s timeout
 
     try {
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
