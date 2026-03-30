@@ -33,7 +33,7 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="border-t border-border glass p-3 md:p-4"
+      className="border-t border-border glass p-3 md:p-4 relative z-[55]"
     >
       <div className="flex items-end gap-2 max-w-3xl mx-auto">
         <div className="flex-1 relative">
@@ -63,9 +63,9 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
           <Send className="w-4 h-4" />
         </Button>
       </div>
-      <div className="flex items-center justify-between max-w-3xl mx-auto mt-2">
+      <div className="flex items-center justify-between gap-3 max-w-3xl mx-auto mt-2 overflow-visible">
         <ModelSelector selectedModel={selectedModel} onSelect={onModelChange} />
-        <p className="text-[10px] text-muted-foreground opacity-60">
+        <p className="text-[10px] text-muted-foreground opacity-60 text-right">
           AI-powered • Not legal advice
         </p>
       </div>
