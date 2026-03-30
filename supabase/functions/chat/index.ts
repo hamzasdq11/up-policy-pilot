@@ -186,6 +186,7 @@ serve(async (req) => {
             ...messages,
           ],
           stream: true,
+          max_tokens: 8192,
         }),
         signal: controller.signal,
       });
