@@ -103,7 +103,7 @@ const simpleMdComponents = {
   ),
   h3: ({ children }: any) => <h3 className="text-sm font-semibold text-foreground mt-2 mb-1">{children}</h3>,
   a: ({ children, href }: any) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="text-foreground underline underline-offset-2">
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline underline-offset-2 hover:text-blue-800 transition-colors">
       {children}
     </a>
   ),
