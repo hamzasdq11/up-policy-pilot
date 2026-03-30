@@ -151,23 +151,23 @@ export default function Index() {
             className="flex flex-col h-screen relative z-10"
           >
             {/* Header */}
-            <header className="border-b border-border glass px-4 md:px-6 py-3 flex items-center gap-3 shrink-0">
+            <header className="glass border-b-0 px-4 md:px-6 py-3 flex items-center gap-3 shrink-0">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setSidebarOpen(true)}
-                className="rounded-xl hover:bg-secondary"
+                className="rounded-xl hover:bg-secondary/60"
               >
-                <Menu className="w-4 h-4" />
+                <Menu className="w-4 h-4 text-muted-foreground" />
               </Button>
 
-              <div className="w-10 h-10 rounded-xl gradient-gold flex items-center justify-center shadow-gold">
+              <div className="w-10 h-10 rounded-2xl gradient-cta flex items-center justify-center shadow-float">
                 <Building2 className="w-5 h-5 text-primary-foreground" />
               </div>
 
               <div className="flex-1 min-w-0">
                 <h1
-                  className="text-base font-bold tracking-tight leading-tight"
+                  className="text-base font-bold tracking-tight leading-tight text-foreground"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
                   UP IIEPP 2022 Advisor
@@ -182,13 +182,13 @@ export default function Index() {
                   variant="ghost"
                   size="icon"
                   onClick={handleReset}
-                  className="rounded-xl hover:bg-secondary"
+                  className="rounded-xl hover:bg-secondary/60"
                   title="New conversation"
                 >
-                  <RotateCcw className="w-4 h-4" />
+                  <RotateCcw className="w-4 h-4 text-muted-foreground" />
                 </Button>
-                <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full glass border border-border text-xs text-muted-foreground">
-                  <Bot className="w-3 h-3 text-gold" />
+                <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full glass text-xs text-muted-foreground">
+                  <Bot className="w-3 h-3 text-tint" />
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                   AI Online
                 </div>
