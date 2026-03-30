@@ -75,7 +75,7 @@ function autoSelectModel(query: string): string {
     (q.includes("₹") && /\d{3,}/.test(q)) ||
     len > 300;
 
-  if (needsDeepReasoning) return "google/gemini-2.5-pro";
+  if (needsDeepReasoning) return "google/gemini-3-flash-preview";
 
   const isModerate =
     q.includes("incentive") || q.includes("subsidy") || q.includes("sgst") ||
@@ -84,7 +84,7 @@ function autoSelectModel(query: string): string {
 
   if (isModerate) return "google/gemini-3-flash-preview";
 
-  return "google/gemini-2.5-flash";
+  return "google/gemini-2.5-flash-lite";
 }
 
 export type ChatMsg = { role: "user" | "assistant"; content: string };

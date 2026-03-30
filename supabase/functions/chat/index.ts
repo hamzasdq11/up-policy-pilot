@@ -96,8 +96,7 @@ STRICT BOUNDARIES:
 
 const ALLOWED_MODELS = [
   "google/gemini-3-flash-preview",
-  "google/gemini-2.5-flash",
-  "google/gemini-2.5-pro",
+  "google/gemini-2.5-flash-lite",
   "openai/gpt-5",
   "openai/gpt-5-mini",
 ];
@@ -170,7 +169,7 @@ serve(async (req) => {
     const selectedModel = ALLOWED_MODELS.includes(model) ? model : "google/gemini-3-flash-preview";
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
+    const timeout = setTimeout(() => controller.abort(), 45000); // 45s timeout
 
     try {
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -186,7 +185,7 @@ serve(async (req) => {
             ...messages,
           ],
           stream: true,
-          max_tokens: 8192,
+          max_tokens: 4096,
         }),
         signal: controller.signal,
       });
