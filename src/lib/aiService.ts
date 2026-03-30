@@ -16,18 +16,6 @@ export const availableModels: AIModel[] = [
     description: "Fast & capable — best for most queries",
   },
   {
-    id: "google/gemini-2.5-flash",
-    label: "Gemini 2.5 Flash",
-    provider: "Google",
-    description: "Balanced speed & quality",
-  },
-  {
-    id: "google/gemini-2.5-pro",
-    label: "Gemini 2.5 Pro",
-    provider: "Google",
-    description: "Top-tier reasoning & analysis",
-  },
-  {
     id: "openai/gpt-5",
     label: "GPT-5",
     provider: "OpenAI",
