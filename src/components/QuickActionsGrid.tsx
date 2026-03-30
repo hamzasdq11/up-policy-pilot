@@ -29,13 +29,13 @@ export function QuickActionsGrid({ onSelect, visible }: QuickActionsGridProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: i * 0.06 }}
                 onClick={() => onSelect(action.query)}
-                className="flex items-center gap-3 px-4 py-3.5 rounded-xl glass border border-border hover:border-primary/30 hover:shadow-gold transition-all text-left group"
+                className="flex items-center gap-3 px-4 py-3.5 rounded-2xl glass hover:shadow-glass-lg transition-all text-left group"
               >
-                <span className="text-lg w-8 h-8 flex items-center justify-center rounded-lg bg-secondary group-hover:scale-110 transition-transform">
+                <span className="text-lg w-8 h-8 flex items-center justify-center rounded-xl bg-tint-light group-hover:scale-110 transition-transform">
                   {action.icon}
                 </span>
-                <span className="text-sm text-secondary-foreground flex-1 font-medium">{action.label}</span>
-                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-gold group-hover:translate-x-0.5 transition-all" />
+                <span className="text-sm text-foreground/70 flex-1 font-medium">{action.label}</span>
+                <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-tint group-hover:translate-x-0.5 transition-all" />
               </motion.button>
             ))}
           </div>

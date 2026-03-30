@@ -81,42 +81,38 @@ export function KnowledgeSidebar({ open, onClose, onTopicSelect }: KnowledgeSide
     <AnimatePresence>
       {open && (
         <>
-          {/* Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-background/60 backdrop-blur-sm z-40 lg:hidden"
+            className="fixed inset-0 bg-foreground/5 backdrop-blur-sm z-40 lg:hidden"
             onClick={onClose}
           />
-          {/* Sidebar */}
           <motion.aside
             initial={{ x: -320 }}
             animate={{ x: 0 }}
             exit={{ x: -320 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed left-0 top-0 bottom-0 w-80 glass border-r border-border z-50 flex flex-col"
+            className="fixed left-0 top-0 bottom-0 w-80 glass-strong border-r-0 z-50 flex flex-col"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 shrink-0">
               <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-gold" />
-                <span className="text-sm font-semibold">Policy Knowledge Base</span>
+                <BookOpen className="w-4 h-4 text-tint" />
+                <span className="text-sm font-semibold text-foreground">Policy Knowledge Base</span>
               </div>
               <button
                 onClick={onClose}
-                className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+                className="w-7 h-7 rounded-xl bg-secondary/60 flex items-center justify-center hover:bg-secondary transition-colors"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-3.5 h-3.5 text-muted-foreground" />
               </button>
             </div>
 
-            {/* Topics */}
             <div className="flex-1 overflow-y-auto scrollbar-thin py-2">
               {policyTopics.map((topic) => (
                 <div key={topic.category} className="mb-1">
                   <div className="flex items-center gap-2 px-4 py-2">
-                    <topic.icon className="w-3.5 h-3.5 text-gold" />
+                    <topic.icon className="w-3.5 h-3.5 text-tint" />
                     <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       {topic.category}
                     </span>
@@ -129,8 +125,8 @@ export function KnowledgeSidebar({ open, onClose, onTopicSelect }: KnowledgeSide
                         onClose();
                       }}
                       className={cn(
-                        "w-full flex items-center gap-2 px-6 py-2 text-sm text-secondary-foreground",
-                        "hover:bg-secondary/50 hover:text-foreground transition-colors group text-left"
+                        "w-full flex items-center gap-2 px-6 py-2 text-sm text-foreground/60",
+                        "hover:bg-tint-light hover:text-foreground transition-colors group text-left"
                       )}
                     >
                       <span className="flex-1">{item.label}</span>
@@ -141,12 +137,11 @@ export function KnowledgeSidebar({ open, onClose, onTopicSelect }: KnowledgeSide
               ))}
             </div>
 
-            {/* Footer */}
-            <div className="px-4 py-3 border-t border-border shrink-0">
+            <div className="px-4 py-3 border-t border-border/50 shrink-0">
               <p className="text-[10px] text-muted-foreground leading-relaxed">
                 Based on the UP Industrial Investment & Employment Promotion Policy 2022.
                 For official documents, visit{" "}
-                <span className="text-gold">invest.up.gov.in</span>
+                <span className="text-tint font-medium">invest.up.gov.in</span>
               </p>
             </div>
           </motion.aside>

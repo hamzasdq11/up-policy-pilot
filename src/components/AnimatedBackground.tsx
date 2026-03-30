@@ -10,9 +10,10 @@ export function AnimatedBackground() {
     if (!ctx) return;
 
     let animId: number;
-    const particles: Array<{
+
+    const orbs: Array<{
       x: number; y: number; vx: number; vy: number;
-      size: number; opacity: number; hue: number;
+      radius: number; hue: number; saturation: number;
     }> = [];
 
     const resize = () => {
@@ -22,50 +23,37 @@ export function AnimatedBackground() {
     resize();
     window.addEventListener("resize", resize);
 
-    // Create particles
-    for (let i = 0; i < 60; i++) {
-      particles.push({
+    // Soft floating orbs
+    for (let i = 0; i < 5; i++) {
+      orbs.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        size: Math.random() * 2 + 0.5,
-        opacity: Math.random() * 0.3 + 0.05,
-        hue: 42 + Math.random() * 15 - 7,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+        radius: 150 + Math.random() * 200,
+        hue: 210 + Math.random() * 50,
+        saturation: 30 + Math.random() * 30,
       });
     }
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw connections
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 150) {
-            ctx.beginPath();
-            ctx.strokeStyle = `hsla(42, 60%, 50%, ${0.06 * (1 - dist / 150)})`;
-            ctx.lineWidth = 0.5;
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
-        }
-      }
+      orbs.forEach((orb) => {
+        const gradient = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.radius);
+        gradient.addColorStop(0, `hsla(${orb.hue}, ${orb.saturation}%, 70%, 0.06)`);
+        gradient.addColorStop(0.5, `hsla(${orb.hue}, ${orb.saturation}%, 60%, 0.03)`);
+        gradient.addColorStop(1, `hsla(${orb.hue}, ${orb.saturation}%, 60%, 0)`);
 
-      // Draw particles
-      particles.forEach((p) => {
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${p.hue}, 70%, 55%, ${p.opacity})`;
+        ctx.arc(orb.x, orb.y, orb.radius, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
         ctx.fill();
 
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+        orb.x += orb.vx;
+        orb.y += orb.vy;
+        if (orb.x < -orb.radius || orb.x > canvas.width + orb.radius) orb.vx *= -1;
+        if (orb.y < -orb.radius || orb.y > canvas.height + orb.radius) orb.vy *= -1;
       });
 
       animId = requestAnimationFrame(draw);
@@ -82,7 +70,6 @@ export function AnimatedBackground() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.6 }}
     />
   );
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Cpu, Check } from "lucide-react";
-import { availableModels, type AIModel } from "@/lib/aiService";
+import { availableModels } from "@/lib/aiService";
 import { cn } from "@/lib/utils";
 
 interface ModelSelectorProps {
@@ -20,10 +20,10 @@ export function ModelSelector({ selectedModel, onSelect }: ModelSelectorProps) {
         aria-expanded={open}
         aria-haspopup="listbox"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg glass border border-border hover:border-primary/30 transition-all text-xs"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-xl glass text-xs hover:shadow-glass-lg transition-all"
       >
-        <Cpu className="w-3 h-3 text-gold" />
-        <span className="text-secondary-foreground font-medium">{current.label}</span>
+        <Cpu className="w-3 h-3 text-tint" />
+        <span className="text-foreground/70 font-medium">{current.label}</span>
         <ChevronDown className={cn("w-3 h-3 text-muted-foreground transition-transform", open && "rotate-180")} />
       </button>
 
@@ -41,9 +41,9 @@ export function ModelSelector({ selectedModel, onSelect }: ModelSelectorProps) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.96 }}
               transition={{ duration: 0.15 }}
-              className="absolute left-0 bottom-full mb-2 w-72 glass border border-border rounded-xl shadow-gold-lg z-[70] py-1 overflow-hidden"
+              className="absolute left-0 bottom-full mb-2 w-72 glass-strong rounded-2xl z-[70] py-1 overflow-hidden"
             >
-              <p className="px-3 py-2 text-[10px] uppercase tracking-wider font-semibold text-muted-foreground border-b border-border">
+              <p className="px-3 py-2 text-[10px] uppercase tracking-wider font-semibold text-muted-foreground border-b border-border/50">
                 Select AI Model
               </p>
               {availableModels.map((model) => (
@@ -55,19 +55,17 @@ export function ModelSelector({ selectedModel, onSelect }: ModelSelectorProps) {
                     setOpen(false);
                   }}
                   className={cn(
-                    "w-full flex items-start gap-3 px-3 py-2.5 text-left hover:bg-secondary/50 transition-colors",
-                    model.id === selectedModel && "bg-secondary/30"
+                    "w-full flex items-start gap-3 px-3 py-2.5 text-left hover:bg-secondary/60 transition-colors",
+                    model.id === selectedModel && "bg-tint-light"
                   )}
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-foreground">{model.label}</span>
-                    </div>
+                    <span className="text-sm font-medium text-foreground">{model.label}</span>
                     <p className="text-[11px] text-muted-foreground mt-0.5">{model.description}</p>
-                    <p className="text-[10px] text-gold-dim mt-0.5">{model.provider}</p>
+                    <p className="text-[10px] text-tint-soft mt-0.5">{model.provider}</p>
                   </div>
                   {model.id === selectedModel && (
-                    <Check className="w-4 h-4 text-gold mt-0.5 shrink-0" />
+                    <Check className="w-4 h-4 text-tint mt-0.5 shrink-0" />
                   )}
                 </button>
               ))}
