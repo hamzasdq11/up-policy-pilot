@@ -104,6 +104,17 @@ const ALLOWED_MODELS = [
 const MAX_MESSAGES = 50;
 const MAX_MESSAGE_LENGTH = 4000;
 
+// Model mapping for direct API fallbacks
+const GEMINI_MODEL_MAP: Record<string, string> = {
+  "google/gemini-3-flash-preview": "gemini-2.0-flash",
+  "google/gemini-2.5-flash-lite": "gemini-2.0-flash-lite",
+};
+
+const OPENAI_MODEL_MAP: Record<string, string> = {
+  "openai/gpt-5": "gpt-4o",
+  "openai/gpt-5-mini": "gpt-4o-mini",
+};
+
 function sanitizeMessages(messages: unknown): { role: string; content: string }[] | null {
   if (!Array.isArray(messages)) return null;
   if (messages.length === 0 || messages.length > MAX_MESSAGES) return null;
@@ -118,10 +129,126 @@ function sanitizeMessages(messages: unknown): { role: string; content: string }[
     sanitized.push({ role, content: content.trim() });
   }
 
-  // Last message must be from user
   if (sanitized.length === 0 || sanitized[sanitized.length - 1].role !== "user") return null;
-
   return sanitized;
+}
+
+interface ChatPayload {
+  messages: { role: string; content: string }[];
+  model: string;
+}
+
+/** Try Lovable AI Gateway (primary) */
+async function tryLovableGateway(payload: ChatPayload, signal: AbortSignal): Promise<Response | null> {
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (!LOVABLE_API_KEY) return null;
+
+  try {
+    const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: payload.model,
+        messages: [{ role: "system", content: SYSTEM_PROMPT }, ...payload.messages],
+        stream: true,
+        max_tokens: 4096,
+      }),
+      signal,
+    });
+
+    if (resp.ok) return resp;
+
+    // Don't fallback on 429/402 — those are user-level limits
+    if (resp.status === 429 || resp.status === 402) return resp;
+
+    console.warn("Lovable gateway failed:", resp.status);
+    await resp.text(); // consume body
+    return null;
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "AbortError") throw e;
+    console.warn("Lovable gateway error:", e);
+    return null;
+  }
+}
+
+/** Try Google Gemini API directly (fallback 1) */
+async function tryGeminiDirect(payload: ChatPayload, signal: AbortSignal): Promise<Response | null> {
+  const GEMINI_KEY = Deno.env.get("GOOGLE_GEMINI_API_KEY");
+  if (!GEMINI_KEY) return null;
+
+  const geminiModel = GEMINI_MODEL_MAP[payload.model] || "gemini-2.0-flash";
+
+  try {
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${GEMINI_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: geminiModel,
+          messages: [{ role: "system", content: SYSTEM_PROMPT }, ...payload.messages],
+          stream: true,
+          max_tokens: 4096,
+        }),
+        signal,
+      }
+    );
+
+    if (resp.ok) {
+      console.log("Using Gemini direct fallback with model:", geminiModel);
+      return resp;
+    }
+    console.warn("Gemini direct failed:", resp.status);
+    await resp.text();
+    return null;
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "AbortError") throw e;
+    console.warn("Gemini direct error:", e);
+    return null;
+  }
+}
+
+/** Try OpenAI API directly (fallback 2) */
+async function tryOpenAIDirect(payload: ChatPayload, signal: AbortSignal): Promise<Response | null> {
+  const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY");
+  if (!OPENAI_KEY) return null;
+
+  const openaiModel = OPENAI_MODEL_MAP[payload.model] || "gpt-4o-mini";
+
+  try {
+    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OPENAI_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: openaiModel,
+        messages: [{ role: "system", content: SYSTEM_PROMPT }, ...payload.messages],
+        stream: true,
+        max_tokens: 4096,
+      }),
+      signal,
+    });
+
+    if (resp.ok) {
+      console.log("Using OpenAI direct fallback with model:", openaiModel);
+      return resp;
+    }
+    console.warn("OpenAI direct failed:", resp.status);
+    await resp.text();
+    return null;
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "AbortError") throw e;
+    console.warn("OpenAI direct error:", e);
+    return null;
+  }
 }
 
 serve(async (req) => {
@@ -156,43 +283,20 @@ serve(async (req) => {
     }
 
     const model = typeof body.model === "string" ? body.model : "";
-
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      console.error("LOVABLE_API_KEY is not configured");
-      return new Response(
-        JSON.stringify({ error: "AI service is not configured. Please contact support." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
     const selectedModel = ALLOWED_MODELS.includes(model) ? model : "google/gemini-3-flash-preview";
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 45000); // 45s timeout
+    const timeout = setTimeout(() => controller.abort(), 45000);
 
     try {
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: selectedModel,
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            ...messages,
-          ],
-          stream: true,
-          max_tokens: 4096,
-        }),
-        signal: controller.signal,
-      });
+      const payload: ChatPayload = { messages, model: selectedModel };
 
-      clearTimeout(timeout);
+      // Try providers in order: Lovable Gateway → Gemini Direct → OpenAI Direct
+      let response = await tryLovableGateway(payload, controller.signal);
 
-      if (!response.ok) {
+      // If gateway returned 429/402, pass through immediately
+      if (response && !response.ok) {
+        clearTimeout(timeout);
         if (response.status === 429) {
           return new Response(
             JSON.stringify({ error: "Rate limit exceeded. Please wait a moment and try again." }),
@@ -205,10 +309,21 @@ serve(async (req) => {
             { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
-        const errorText = await response.text();
-        console.error("AI gateway error:", response.status, errorText);
+      }
+
+      // Fallback chain
+      if (!response || !response.ok) {
+        response = await tryGeminiDirect(payload, controller.signal);
+      }
+      if (!response || !response.ok) {
+        response = await tryOpenAIDirect(payload, controller.signal);
+      }
+
+      clearTimeout(timeout);
+
+      if (!response || !response.ok) {
         return new Response(
-          JSON.stringify({ error: "AI service temporarily unavailable. Please try again." }),
+          JSON.stringify({ error: "All AI providers are unavailable. Please try again later." }),
           { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
