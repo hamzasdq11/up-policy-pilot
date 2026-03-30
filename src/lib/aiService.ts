@@ -11,19 +11,19 @@ export interface AIModel {
 export const availableModels: AIModel[] = [
   {
     id: "google/gemini-3-flash-preview",
-    label: "Gemini 3 Flash",
+    label: "Gemini 3.1 Flash",
     provider: "Google",
     description: "Fast & capable — best for most queries",
   },
   {
     id: "openai/gpt-5",
-    label: "GPT-5",
+    label: "GPT-5.2",
     provider: "OpenAI",
     description: "Powerful all-rounder, excellent reasoning",
   },
   {
     id: "openai/gpt-5-mini",
-    label: "GPT-5 Mini",
+    label: "GPT-5.2 Mini",
     provider: "OpenAI",
     description: "Strong performance, lower cost",
   },
