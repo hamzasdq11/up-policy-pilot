@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Building2, Menu, BookOpen, RotateCcw, Bot } from "lucide-react";
+import { Building2, Menu, RotateCcw, Bot, AlertCircle } from "lucide-react";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { HeroSection } from "@/components/HeroSection";
 import { ChatMessage } from "@/components/ChatMessage";
@@ -8,8 +8,9 @@ import { ChatInput } from "@/components/ChatInput";
 import { QuickActionsGrid } from "@/components/QuickActionsGrid";
 import { KnowledgeSidebar } from "@/components/KnowledgeSidebar";
 import { FollowUpSuggestions, getFollowUps } from "@/components/FollowUpSuggestions";
-import { getResponse, type PolicyResponse } from "@/lib/policyKnowledge";
+import { streamChat, type ChatMsg } from "@/lib/aiService";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: string;
@@ -17,7 +18,7 @@ interface Message {
   content: string;
 }
 
-const welcomeMessage = `Welcome! I'm your **UP IIEPP 2022 Policy Advisor** — your strategic consultant for industrial investment in Uttar Pradesh.
+const welcomeMessage = `Welcome! I'm your **UP IIEPP 2022 Policy Advisor** — powered by AI to give you strategic, personalized industrial investment guidance for Uttar Pradesh.
 
 I can help you with:
 - **Choosing the best incentive option** for your investment
@@ -28,33 +29,23 @@ I can help you with:
 
 Share your **investment amount**, **sector**, and **preferred location** for personalized advice — or tap a quick action below.`;
 
-function formatResponse(r: PolicyResponse): string {
-  let text = `**📋 Direct Answer**\n${r.directAnswer}\n\n`;
-  text += `**🎯 Best Strategy / Recommendation**\n${r.strategy}\n\n`;
-  text += `**✅ Policy Benefits Applicable**\n`;
-  r.benefits.forEach((b) => { text += `- ${b}\n`; });
-  text += `\n**⚠️ Risks / Practical Challenges**\n`;
-  r.risks.forEach((ri) => { text += `- ${ri}\n`; });
-  if (r.comparison) {
-    text += `\n**📊 Comparative Insight**\n${r.comparison}`;
-  }
-  return text;
-}
-
 export default function Index() {
   const [showHero, setShowHero] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isTyping, setIsTyping] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
   const [showQuickActions, setShowQuickActions] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [lastQuery, setLastQuery] = useState("");
+  const [selectedModel, setSelectedModel] = useState("google/gemini-3-flash-preview");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
     }
-  }, [messages, isTyping]);
+  }, [messages, isStreaming]);
 
   const startChat = useCallback(() => {
     setShowHero(false);
@@ -64,26 +55,78 @@ export default function Index() {
   const handleSend = useCallback((query: string) => {
     const userMsg: Message = { id: Date.now().toString(), role: "user", content: query };
     setMessages((prev) => [...prev, userMsg]);
-    setIsTyping(true);
+    setIsStreaming(true);
     setShowQuickActions(false);
     setLastQuery(query);
 
-    setTimeout(() => {
-      const response = getResponse(query);
-      const assistantMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: formatResponse(response),
-      };
-      setMessages((prev) => [...prev, assistantMsg]);
-      setIsTyping(false);
-    }, 1000 + Math.random() * 800);
-  }, []);
+    // Build conversation history for context (exclude welcome message)
+    const chatHistory: ChatMsg[] = [];
+    setMessages((prev) => {
+      prev.forEach((m) => {
+        if (m.id === "welcome" || m.id.startsWith("welcome-")) return;
+        chatHistory.push({ role: m.role, content: m.content });
+      });
+      chatHistory.push({ role: "user", content: query });
+      return [...prev]; // no change, just reading
+    });
+
+    // If chatHistory is empty (first message), just add the user msg
+    if (chatHistory.length === 0) {
+      chatHistory.push({ role: "user", content: query });
+    }
+
+    const assistantId = (Date.now() + 1).toString();
+    let assistantContent = "";
+
+    abortRef.current = new AbortController();
+
+    streamChat({
+      messages: chatHistory,
+      model: selectedModel,
+      signal: abortRef.current.signal,
+      onDelta: (chunk) => {
+        assistantContent += chunk;
+        setMessages((prev) => {
+          const last = prev[prev.length - 1];
+          if (last?.id === assistantId) {
+            return prev.map((m) =>
+              m.id === assistantId ? { ...m, content: assistantContent } : m
+            );
+          }
+          return [...prev, { id: assistantId, role: "assistant", content: assistantContent }];
+        });
+      },
+      onDone: () => {
+        setIsStreaming(false);
+        abortRef.current = null;
+      },
+      onError: (error) => {
+        setIsStreaming(false);
+        abortRef.current = null;
+        toast({
+          title: "AI Error",
+          description: error,
+          variant: "destructive",
+        });
+        // Add error message
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: (Date.now() + 2).toString(),
+            role: "assistant",
+            content: `⚠️ **Error:** ${error}\n\nPlease try again or select a different model.`,
+          },
+        ]);
+      },
+    });
+  }, [selectedModel, toast]);
 
   const handleReset = useCallback(() => {
+    if (abortRef.current) abortRef.current.abort();
     setMessages([{ id: "welcome-" + Date.now(), role: "assistant", content: welcomeMessage }]);
     setShowQuickActions(true);
     setLastQuery("");
+    setIsStreaming(false);
   }, []);
 
   return (
@@ -130,7 +173,7 @@ export default function Index() {
                   UP IIEPP 2022 Advisor
                 </h1>
                 <p className="text-[11px] text-muted-foreground truncate">
-                  Industrial Investment & Employment Promotion Policy
+                  AI-Powered Industrial Policy Advisory
                 </p>
               </div>
 
@@ -147,7 +190,7 @@ export default function Index() {
                 <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full glass border border-border text-xs text-muted-foreground">
                   <Bot className="w-3 h-3 text-gold" />
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  Online
+                  AI Online
                 </div>
               </div>
             </header>
@@ -158,12 +201,13 @@ export default function Index() {
                 {messages.map((msg) => (
                   <ChatMessage key={msg.id} role={msg.role} content={msg.content} />
                 ))}
-                {isTyping && <ChatMessage role="assistant" content="" isTyping />}
+                {isStreaming && messages[messages.length - 1]?.role !== "assistant" && (
+                  <ChatMessage role="assistant" content="" isTyping />
+                )}
 
                 <QuickActionsGrid onSelect={handleSend} visible={showQuickActions} />
 
-                {/* Follow-up suggestions after last assistant message */}
-                {!isTyping && !showQuickActions && lastQuery && (
+                {!isStreaming && !showQuickActions && lastQuery && (
                   <FollowUpSuggestions
                     suggestions={getFollowUps(lastQuery)}
                     onSelect={handleSend}
@@ -173,7 +217,12 @@ export default function Index() {
             </div>
 
             {/* Input */}
-            <ChatInput onSend={handleSend} disabled={isTyping} />
+            <ChatInput
+              onSend={handleSend}
+              disabled={isStreaming}
+              selectedModel={selectedModel}
+              onModelChange={setSelectedModel}
+            />
 
             {/* Sidebar */}
             <KnowledgeSidebar
