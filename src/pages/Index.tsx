@@ -80,7 +80,7 @@ export default function Index() {
 
   const startChat = useCallback(() => {
     setShowHero(false);
-    setMessages([{ id: "welcome", role: "assistant", content: welcomeMessage }]);
+    setMessages([{ id: "__welcome__", role: "assistant", content: welcomeMessage }]);
   }, []);
 
   const handleSend = useCallback((query: string) => {
