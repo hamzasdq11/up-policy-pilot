@@ -113,6 +113,15 @@ export function HeroSection({ onStart }: HeroSectionProps) {
           This AI-powered advisory tool explores the <strong className="text-foreground">Uttar Pradesh Industrial Investment and Employment Promotion Policy (IIEPP) 2022</strong> — a landmark framework designed to attract ₹10 lakh crore in investment and generate 40 lakh jobs. Built as part of the <strong className="text-foreground">Business Law</strong> curriculum, it demonstrates how legal and regulatory frameworks shape industrial strategy, investor incentives, and economic development at the state level.
         </p>
       </motion.div>
-    </div>
+
+      {/* Class Photo */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.7 }}
+        className="mt-8 sm:mt-12 max-w-2xl w-full rounded-xl sm:rounded-2xl border border-border overflow-hidden"
+      >
+        <img src={heroBg} alt="Business Law class with Prof. Angshuman Hazarika at IIM Ranchi" className="w-full h-auto object-cover" />
+      </motion.div>
   );
 }
