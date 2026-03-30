@@ -1,14 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ModelSelector } from "@/components/ModelSelector";
 import { motion } from "framer-motion";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
   disabled?: boolean;
+  selectedModel: string;
+  onModelChange: (model: string) => void;
 }
 
-export function ChatInput({ onSend, disabled }: ChatInputProps) {
+export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: ChatInputProps) {
   const [value, setValue] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -60,9 +63,12 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           <Send className="w-4 h-4" />
         </Button>
       </div>
-      <p className="text-[10px] text-muted-foreground text-center mt-2 opacity-60">
-        Powered by UP IIEPP 2022 policy knowledge base • Not legal advice
-      </p>
+      <div className="flex items-center justify-between max-w-3xl mx-auto mt-2">
+        <ModelSelector selectedModel={selectedModel} onSelect={onModelChange} />
+        <p className="text-[10px] text-muted-foreground opacity-60">
+          AI-powered • Not legal advice
+        </p>
+      </div>
     </motion.div>
   );
 }
