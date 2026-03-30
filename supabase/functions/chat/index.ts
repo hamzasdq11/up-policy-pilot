@@ -87,83 +87,149 @@ Format each citation as a numbered markdown link:
 1. [Source Title](URL) — brief relevance note
 2. [Source Title](URL) — brief relevance note
 
-Also embed inline citations within the answer text using markdown links where specific claims, statistics, or policy clauses are referenced. Example: "The capital subsidy under [Option 1](https://invest.up.gov.in) offers up to 25% of FCI."`;
+Also embed inline citations within the answer text using markdown links where specific claims, statistics, or policy clauses are referenced. Example: "The capital subsidy under [Option 1](https://invest.up.gov.in) offers up to 25% of FCI."
 
+STRICT BOUNDARIES:
+- You ONLY answer questions related to UP IIEPP 2022, industrial policy, business investment in UP, and closely related economic/legal topics.
+- If a user asks about unrelated topics (personal advice, coding, recipes, etc.), politely redirect them to ask about UP industrial policy.
+- Never generate harmful, misleading, or speculative financial advice. Always caveat with "consult a qualified professional for legal/financial decisions."`;
+
+const ALLOWED_MODELS = [
+  "google/gemini-3-flash-preview",
+  "google/gemini-2.5-flash",
+  "google/gemini-2.5-pro",
+  "openai/gpt-5",
+  "openai/gpt-5-mini",
+];
+
+const MAX_MESSAGES = 50;
+const MAX_MESSAGE_LENGTH = 4000;
+
+function sanitizeMessages(messages: unknown): { role: string; content: string }[] | null {
+  if (!Array.isArray(messages)) return null;
+  if (messages.length === 0 || messages.length > MAX_MESSAGES) return null;
+
+  const sanitized: { role: string; content: string }[] = [];
+  for (const msg of messages) {
+    if (!msg || typeof msg !== "object") return null;
+    const { role, content } = msg as Record<string, unknown>;
+    if (typeof role !== "string" || typeof content !== "string") return null;
+    if (!["user", "assistant"].includes(role)) return null;
+    if (content.length === 0 || content.length > MAX_MESSAGE_LENGTH) return null;
+    sanitized.push({ role, content: content.trim() });
+  }
+
+  // Last message must be from user
+  if (sanitized.length === 0 || sanitized[sanitized.length - 1].role !== "user") return null;
+
+  return sanitized;
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    const { messages, model } = await req.json();
+  if (req.method !== "POST") {
+    return new Response(
+      JSON.stringify({ error: "Method not allowed" }),
+      { status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
 
-    if (!messages || !Array.isArray(messages)) {
+  try {
+    let body: Record<string, unknown>;
+    try {
+      body = await req.json();
+    } catch {
       return new Response(
-        JSON.stringify({ error: "messages array is required" }),
+        JSON.stringify({ error: "Invalid JSON body" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    const messages = sanitizeMessages(body.messages);
+    if (!messages) {
+      return new Response(
+        JSON.stringify({ error: "Invalid messages: must be an array of {role, content} objects (max 50 messages, max 4000 chars each)" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    // Validate model against allowed list
-    const allowedModels = [
-      "google/gemini-3-flash-preview",
-      "google/gemini-2.5-flash",
-      "google/gemini-2.5-pro",
-      "openai/gpt-5",
-      "openai/gpt-5-mini",
-    ];
-    const selectedModel = allowedModels.includes(model) ? model : "google/gemini-3-flash-preview";
+    const model = typeof body.model === "string" ? body.model : "";
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: selectedModel,
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          ...messages,
-        ],
-        stream: true,
-      }),
-    });
-
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please wait a moment and try again." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "AI credits exhausted. Please add funds in Settings → Workspace → Usage." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) {
+      console.error("LOVABLE_API_KEY is not configured");
       return new Response(
-        JSON.stringify({ error: "AI service temporarily unavailable" }),
+        JSON.stringify({ error: "AI service is not configured. Please contact support." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    return new Response(response.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
-    });
+    const selectedModel = ALLOWED_MODELS.includes(model) ? model : "google/gemini-3-flash-preview";
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
+
+    try {
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: selectedModel,
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            ...messages,
+          ],
+          stream: true,
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeout);
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          return new Response(
+            JSON.stringify({ error: "Rate limit exceeded. Please wait a moment and try again." }),
+            { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+        if (response.status === 402) {
+          return new Response(
+            JSON.stringify({ error: "AI credits exhausted. Please try again later." }),
+            { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+        const errorText = await response.text();
+        console.error("AI gateway error:", response.status, errorText);
+        return new Response(
+          JSON.stringify({ error: "AI service temporarily unavailable. Please try again." }),
+          { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      return new Response(response.body, {
+        headers: { ...corsHeaders, "Content-Type": "text/event-stream", "Cache-Control": "no-cache" },
+      });
+    } catch (fetchError) {
+      clearTimeout(timeout);
+      if (fetchError instanceof DOMException && fetchError.name === "AbortError") {
+        return new Response(
+          JSON.stringify({ error: "Request timed out. Please try a shorter question." }),
+          { status: 504, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      throw fetchError;
+    }
   } catch (e) {
     console.error("Chat function error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
+      JSON.stringify({ error: "Something went wrong. Please try again." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
