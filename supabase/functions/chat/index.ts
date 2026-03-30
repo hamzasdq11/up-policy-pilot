@@ -70,7 +70,25 @@ If user provides location → mention regional benefits (Bundelkhand, Poorvancha
 Always include at least one realistic limitation/risk.
 Be professional but simple. No jargon overload. Business-focused.
 Use bullet points and structured formatting.
-If unsure, ask clarifying questions (investment size, sector, location).`;
+If unsure, ask clarifying questions (investment size, sector, location).
+
+CITATIONS & REFERENCES (MANDATORY):
+Every response MUST end with a **📎 Sources & References** section containing 2-5 relevant links. Use real, authoritative sources:
+- UP IIEPP 2022 official policy document: https://invest.up.gov.in
+- UP Nivesh Mitra portal: https://niveshmitra.up.nic.in
+- DPIIT / Make in India: https://www.makeinindia.com
+- Ministry of MSME: https://msme.gov.in
+- RBI / Economic Survey data: https://rbi.org.in
+- State comparison data: https://www.ibef.org
+- NITI Aayog reports: https://niti.gov.in
+- World Bank Ease of Doing Business: https://www.doingbusiness.org
+
+Format each citation as a numbered markdown link:
+1. [Source Title](URL) — brief relevance note
+2. [Source Title](URL) — brief relevance note
+
+Also embed inline citations within the answer text using markdown links where specific claims, statistics, or policy clauses are referenced. Example: "The capital subsidy under [Option 1](https://invest.up.gov.in) offers up to 25% of FCI."`;
+
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
