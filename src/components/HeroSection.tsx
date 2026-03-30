@@ -1,7 +1,6 @@
-import { motion, useScroll, useTransform } from "framer-motion";
-import { Building2, ArrowRight, TrendingUp, MapPin, Shield, Zap } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, TrendingUp, MapPin, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRef } from "react";
 import heroBg from "@/assets/hero-bg.jpeg";
 
 interface HeroSectionProps {
@@ -16,24 +15,8 @@ const stats = [
 ];
 
 export function HeroSection({ onStart }: HeroSectionProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-
   return (
-    <div ref={ref} className="relative flex flex-col items-center justify-center min-h-screen px-4 text-center z-10 overflow-hidden">
-      {/* Parallax Background */}
-      <motion.div
-        className="absolute inset-0 -z-10"
-        style={{ y: bgY }}
-      >
-        <img
-          src={heroBg}
-          alt=""
-          className="w-full h-[130%] object-cover"
-        />
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
-      </motion.div>
+    <div className="relative flex flex-col items-center px-4 pt-8 pb-16 z-10 overflow-y-auto min-h-0 flex-1">
       {/* Badge */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -47,35 +30,33 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         </span>
       </motion.div>
 
-      {/* Logo */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="w-20 h-20 rounded-3xl gradient-cta flex items-center justify-center shadow-float mb-8"
-      >
-        <Building2 className="w-10 h-10 text-primary-foreground" />
-      </motion.div>
-
       {/* Title */}
       <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.2 }}
-        className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4 leading-[1.1]"
+        transition={{ duration: 0.7, delay: 0.1 }}
+        className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-3 leading-[1.1] text-center"
       >
         <span className="text-foreground">UP IIEPP</span>{" "}
         <span className="text-gradient-hero">2022</span>
-        <br />
-        <span className="text-foreground text-3xl md:text-4xl lg:text-5xl">Policy Advisor</span>
       </motion.h1>
+
+      <motion.p
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.15 }}
+        className="text-2xl md:text-3xl font-bold text-foreground/80 mb-4 text-center"
+        style={{ fontFamily: "'DM Serif Display', serif" }}
+      >
+        Policy Advisor
+      </motion.p>
 
       {/* Subtitle */}
       <motion.p
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.35 }}
-        className="text-base md:text-lg text-muted-foreground max-w-xl mb-10 leading-relaxed"
+        transition={{ duration: 0.7, delay: 0.25 }}
+        className="text-base md:text-lg text-muted-foreground max-w-xl mb-8 leading-relaxed text-center"
       >
         Your strategic consultant for industrial investment in Uttar Pradesh.
         Get personalized incentive analysis, risk assessment, and state comparisons.
@@ -85,7 +66,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.5 }}
+        transition={{ duration: 0.6, delay: 0.35 }}
       >
         <Button
           onClick={onStart}
@@ -101,16 +82,16 @@ export function HeroSection({ onStart }: HeroSectionProps) {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.7 }}
-        className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl w-full"
+        transition={{ duration: 0.7, delay: 0.5 }}
+        className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl w-full"
       >
         {stats.map((stat, i) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.8 + i * 0.1 }}
-            className="glass rounded-2xl p-4 hover:shadow-glass-lg transition-all group"
+            transition={{ duration: 0.5, delay: 0.6 + i * 0.1 }}
+            className="glass rounded-2xl p-4 hover:shadow-glass-lg transition-all group text-center"
           >
             <stat.icon className="w-4 h-4 text-tint mb-2 mx-auto group-hover:scale-110 transition-transform" />
             <div className="text-lg font-bold text-foreground">{stat.value}</div>
@@ -119,26 +100,27 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         ))}
       </motion.div>
 
-      {/* Academic Credit */}
+      {/* Course & Image Section */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 1.2 }}
-        className="mt-16 mb-8 glass rounded-2xl px-6 py-5 max-w-lg w-full text-center space-y-1"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.8 }}
+        className="mt-14 max-w-3xl w-full glass-strong rounded-3xl overflow-hidden"
       >
-        <p className="text-[11px] text-muted-foreground/70 italic leading-relaxed">
-          Engineered in partial fulfilment of the requirements for the AI Assignment under the course <span className="font-semibold text-foreground/70">Business Law</span>
-        </p>
-        <p className="text-xs font-semibold text-foreground/80 tracking-wide">Indian Institute of Management Ranchi</p>
-        <p className="text-[11px] text-muted-foreground/70">Faculty: <span className="font-medium text-foreground/70">Prof. Angshuman Hazarika</span></p>
-        <div className="pt-2 border-t border-border/40 mt-2">
-          <p className="text-xs font-bold text-foreground/85 tracking-tight">Mohammad Hamza Siddiqui</p>
-          <p className="text-[10px] text-muted-foreground/60 font-medium">IPM29-24</p>
+        <img
+          src={heroBg}
+          alt="Industrial landscape of Uttar Pradesh"
+          className="w-full h-48 md:h-64 object-cover"
+        />
+        <div className="p-6 md:p-8">
+          <h2 className="text-xl md:text-2xl font-bold text-foreground mb-3" style={{ fontFamily: "'DM Serif Display', serif" }}>
+            Business Law & Industrial Policy
+          </h2>
+          <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+            This AI-powered advisory tool explores the <strong className="text-foreground">Uttar Pradesh Industrial Investment and Employment Promotion Policy (IIEPP) 2022</strong> — a landmark framework designed to attract ₹10 lakh crore in investment and generate 40 lakh jobs. Built as part of the <strong className="text-foreground">Business Law</strong> curriculum, it demonstrates how legal and regulatory frameworks shape industrial strategy, investor incentives, and economic development at the state level.
+          </p>
         </div>
       </motion.div>
-
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent pointer-events-none" />
     </div>
   );
 }
