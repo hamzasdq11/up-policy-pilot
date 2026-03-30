@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Building2, Menu, RotateCcw, Bot, AlertCircle } from "lucide-react";
+import { Building2, Menu, RotateCcw, Bot } from "lucide-react";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { HeroSection } from "@/components/HeroSection";
 import { ChatMessage } from "@/components/ChatMessage";
@@ -11,6 +11,7 @@ import { FollowUpSuggestions, getFollowUps } from "@/components/FollowUpSuggesti
 import { streamChat, type ChatMsg } from "@/lib/aiService";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import iimLogo from "@/assets/iim-ranchi-logo.png";
 
 interface Message {
   id: string;
@@ -28,6 +29,36 @@ I can help you with:
 - **Regional zone analysis** (Bundelkhand, Poorvanchal, Defense Corridor)
 
 Share your **investment amount**, **sector**, and **preferred location** for personalized advice — or tap a quick action below.`;
+
+function AcademicHeader() {
+  return (
+    <div className="w-full glass border-b border-border/50 px-4 py-2 shrink-0 z-50">
+      <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+        {/* Left: Logo */}
+        <div className="flex items-center gap-3 shrink-0">
+          <img src={iimLogo} alt="IIM Ranchi" className="h-10 w-10 object-contain" />
+          <div className="hidden sm:block">
+            <p className="text-xs font-semibold text-foreground leading-tight">Indian Institute of</p>
+            <p className="text-xs font-semibold text-foreground leading-tight">Management Ranchi</p>
+          </div>
+        </div>
+
+        {/* Center: Course Info */}
+        <div className="text-center flex-1 min-w-0">
+          <p className="text-[11px] text-muted-foreground italic truncate">
+            AI Assignment · <span className="font-semibold text-foreground/80">Business Law</span> · Prof. Angshuman Hazarika
+          </p>
+        </div>
+
+        {/* Right: Student */}
+        <div className="text-right shrink-0">
+          <p className="text-xs font-bold text-foreground leading-tight">Mohammad Hamza Siddiqui</p>
+          <p className="text-[10px] text-muted-foreground font-medium">IPM29-24</p>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Index() {
   const [showHero, setShowHero] = useState(true);
@@ -59,7 +90,6 @@ export default function Index() {
     setShowQuickActions(false);
     setLastQuery(query);
 
-    // Build conversation history for context (exclude welcome message)
     const chatHistory: ChatMsg[] = [];
     setMessages((prev) => {
       prev.forEach((m) => {
@@ -67,10 +97,9 @@ export default function Index() {
         chatHistory.push({ role: m.role, content: m.content });
       });
       chatHistory.push({ role: "user", content: query });
-      return [...prev]; // no change, just reading
+      return [...prev];
     });
 
-    // If chatHistory is empty (first message), just add the user msg
     if (chatHistory.length === 0) {
       chatHistory.push({ role: "user", content: query });
     }
@@ -103,19 +132,10 @@ export default function Index() {
       onError: (error) => {
         setIsStreaming(false);
         abortRef.current = null;
-        toast({
-          title: "AI Error",
-          description: error,
-          variant: "destructive",
-        });
-        // Add error message
+        toast({ title: "AI Error", description: error, variant: "destructive" });
         setMessages((prev) => [
           ...prev,
-          {
-            id: (Date.now() + 2).toString(),
-            role: "assistant",
-            content: `⚠️ **Error:** ${error}\n\nPlease try again or select a different model.`,
-          },
+          { id: (Date.now() + 2).toString(), role: "assistant", content: `⚠️ **Error:** ${error}\n\nPlease try again or select a different model.` },
         ]);
       },
     });
@@ -133,12 +153,16 @@ export default function Index() {
     <div className="flex flex-col h-screen bg-background relative overflow-hidden">
       <AnimatedBackground />
 
+      {/* Persistent Academic Header */}
+      <AcademicHeader />
+
       <AnimatePresence mode="wait">
         {showHero ? (
           <motion.div
             key="hero"
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.4 }}
+            className="flex-1 flex flex-col overflow-y-auto"
           >
             <HeroSection onStart={startChat} />
           </motion.div>
@@ -148,7 +172,7 @@ export default function Index() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="flex flex-col h-screen relative z-10"
+            className="flex flex-col flex-1 relative z-10 min-h-0"
           >
             {/* Header */}
             <header className="glass border-b-0 px-4 md:px-6 py-3 flex items-center gap-3 shrink-0">
@@ -168,7 +192,7 @@ export default function Index() {
               <div className="flex-1 min-w-0">
                 <h1
                   className="text-base font-bold tracking-tight leading-tight text-foreground"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
+                  style={{ fontFamily: "'DM Serif Display', serif" }}
                 >
                   UP IIEPP 2022 Advisor
                 </h1>
@@ -204,32 +228,18 @@ export default function Index() {
                 {isStreaming && messages[messages.length - 1]?.role !== "assistant" && (
                   <ChatMessage role="assistant" content="" isTyping />
                 )}
-
                 <QuickActionsGrid onSelect={handleSend} visible={showQuickActions} />
-
                 {!isStreaming && !showQuickActions && lastQuery && (
-                  <FollowUpSuggestions
-                    suggestions={getFollowUps(lastQuery)}
-                    onSelect={handleSend}
-                  />
+                  <FollowUpSuggestions suggestions={getFollowUps(lastQuery)} onSelect={handleSend} />
                 )}
               </div>
             </div>
 
             {/* Input */}
-            <ChatInput
-              onSend={handleSend}
-              disabled={isStreaming}
-              selectedModel={selectedModel}
-              onModelChange={setSelectedModel}
-            />
+            <ChatInput onSend={handleSend} disabled={isStreaming} selectedModel={selectedModel} onModelChange={setSelectedModel} />
 
             {/* Sidebar */}
-            <KnowledgeSidebar
-              open={sidebarOpen}
-              onClose={() => setSidebarOpen(false)}
-              onTopicSelect={handleSend}
-            />
+            <KnowledgeSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} onTopicSelect={handleSend} />
           </motion.div>
         )}
       </AnimatePresence>
