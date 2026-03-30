@@ -17,7 +17,7 @@ const stats = [
 export function HeroSection({ onStart }: HeroSectionProps) {
   return (
     <div className="relative z-10 w-full">
-      <div className="mx-auto flex w-full max-w-4xl flex-col items-center px-4 sm:px-6 py-8 sm:py-12">
+      <div className="mx-auto flex w-full max-w-5xl flex-col items-center px-4 sm:px-6 py-8 sm:py-12">
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
