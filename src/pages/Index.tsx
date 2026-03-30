@@ -32,28 +32,30 @@ Share your **investment amount**, **sector**, and **preferred location** for per
 
 function AcademicHeader() {
   return (
-    <div className="w-full bg-background border-b border-border px-4 py-2 shrink-0 z-50">
-      <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-        {/* Left: Logo */}
-        <div className="flex items-center gap-3 shrink-0">
-          <img src={iimLogo} alt="IIM Ranchi" className="h-10 w-10 object-contain" />
-          <div className="hidden sm:block">
-            <p className="text-xs font-semibold text-foreground leading-tight">Indian Institute of</p>
-            <p className="text-xs font-semibold text-foreground leading-tight">Management Ranchi</p>
+    <div className="w-full shrink-0 z-50">
+      {/* Top banner */}
+      <div className="w-full bg-foreground text-background px-4 py-1.5 text-center">
+        <p className="text-[10px] sm:text-[11px] tracking-wide font-medium">
+          Engineered in partial fulfilment of the requirements for the AI Assignment under the course <span className="font-bold">Business Law</span> · Prof. Angshuman Hazarika
+        </p>
+      </div>
+      {/* Main header */}
+      <div className="bg-background border-b border-border px-4 py-2">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+          {/* Left: Logo */}
+          <div className="flex items-center gap-3 shrink-0">
+            <img src={iimLogo} alt="IIM Ranchi" className="h-10 w-10 object-contain" />
+            <div className="hidden sm:block">
+              <p className="text-xs font-semibold text-foreground leading-tight">Indian Institute of</p>
+              <p className="text-xs font-semibold text-foreground leading-tight">Management Ranchi</p>
+            </div>
           </div>
-        </div>
 
-        {/* Center: Course Info */}
-        <div className="text-center flex-1 min-w-0">
-          <p className="text-[11px] text-muted-foreground italic truncate">
-            AI Assignment · <span className="font-semibold text-foreground/80">Business Law</span> · Prof. Angshuman Hazarika
-          </p>
-        </div>
-
-        {/* Right: Student */}
-        <div className="text-right shrink-0">
-          <p className="text-xs font-bold text-foreground leading-tight">Mohammad Hamza Siddiqui</p>
-          <p className="text-[10px] text-muted-foreground font-medium">IPM29-24</p>
+          {/* Right: Student */}
+          <div className="text-right shrink-0">
+            <p className="text-xs font-bold text-foreground leading-tight">Mohammad Hamza Siddiqui</p>
+            <p className="text-[10px] text-muted-foreground font-medium">IPM29-24</p>
+          </div>
         </div>
       </div>
     </div>
