@@ -1,6 +1,8 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Building2, ArrowRight, TrendingUp, MapPin, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRef } from "react";
+import heroBg from "@/assets/hero-bg.jpeg";
 
 interface HeroSectionProps {
   onStart: () => void;
@@ -14,8 +16,24 @@ const stats = [
 ];
 
 export function HeroSection({ onStart }: HeroSectionProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen px-4 text-center z-10">
+    <div ref={ref} className="relative flex flex-col items-center justify-center min-h-screen px-4 text-center z-10 overflow-hidden">
+      {/* Parallax Background */}
+      <motion.div
+        className="absolute inset-0 -z-10"
+        style={{ y: bgY }}
+      >
+        <img
+          src={heroBg}
+          alt=""
+          className="w-full h-[130%] object-cover"
+        />
+        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
+      </motion.div>
       {/* Badge */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
