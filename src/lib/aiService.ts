@@ -84,7 +84,7 @@ function autoSelectModel(query: string): string {
 
   if (isModerate) return "google/gemini-3-flash-preview";
 
-  return "google/gemini-2.5-flash";
+  return "google/gemini-2.5-flash-lite";
 }
 
 export type ChatMsg = { role: "user" | "assistant"; content: string };
