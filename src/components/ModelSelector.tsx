@@ -62,16 +62,6 @@ export function ModelSelector({ selectedModel, onSelect }: ModelSelectorProps) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-foreground">{model.label}</span>
-                      {model.badge && (
-                        <span className={cn(
-                          "text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded",
-                          model.badge === "Default" && "bg-secondary text-muted-foreground",
-                          model.badge === "Pro" && "bg-primary/15 text-gold",
-                          model.badge === "Premium" && "gradient-gold text-primary-foreground",
-                        )}>
-                          {model.badge}
-                        </span>
-                      )}
                     </div>
                     <p className="text-[11px] text-muted-foreground mt-0.5">{model.description}</p>
                     <p className="text-[10px] text-gold-dim mt-0.5">{model.provider}</p>
