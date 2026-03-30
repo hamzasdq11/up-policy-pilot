@@ -1,4 +1,3 @@
-import { supabase } from "@/integrations/supabase/client";
 import { getResponse, type PolicyResponse } from "@/lib/policyKnowledge";
 
 export interface AIModel {
@@ -17,26 +16,24 @@ export const availableModels: AIModel[] = [
   },
   {
     id: "openai/gpt-5",
-    label: "GPT-5.2",
+    label: "GPT-5",
     provider: "OpenAI",
     description: "Powerful all-rounder, excellent reasoning",
   },
   {
     id: "openai/gpt-5-mini",
-    label: "GPT-5.2 Mini",
+    label: "GPT-5 Mini",
     provider: "OpenAI",
     description: "Strong performance, lower cost",
   },
 ];
 
 /**
- * Determines if a query needs the LLM or can be answered locally.
- * Returns local response if possible, null if LLM is needed.
+ * Local responses for trivial queries — saves API calls.
  */
 function tryLocalResponse(query: string): string | null {
   const q = query.toLowerCase().trim();
 
-  // Greetings / trivial — don't waste an LLM call
   const trivialPatterns = [
     /^(hi|hello|hey|namaste|good\s*(morning|afternoon|evening))[\s!.?]*$/,
     /^(thanks|thank\s*you|ok|okay|got\s*it|understood|sure|great|cool)[\s!.?]*$/,
@@ -58,18 +55,16 @@ function tryLocalResponse(query: string): string | null {
     }
   }
 
-  return null; // needs LLM
+  return null;
 }
 
 /**
  * Auto-selects the best model based on query complexity.
- * The user's selected model in the UI is ignored — this runs silently.
  */
 function autoSelectModel(query: string): string {
   const q = query.toLowerCase();
   const len = query.length;
 
-  // Complex: comparisons, multi-state, detailed analysis, large investments
   const needsDeepReasoning =
     (q.includes("compar") && (q.includes("gujarat") || q.includes("tamil") || q.includes("telangana") || q.includes("karnataka"))) ||
     (q.includes("vs") && q.includes("state")) ||
@@ -80,37 +75,57 @@ function autoSelectModel(query: string): string {
     (q.includes("₹") && /\d{3,}/.test(q)) ||
     len > 300;
 
-  if (needsDeepReasoning) {
-    return "google/gemini-2.5-pro";
-  }
+  if (needsDeepReasoning) return "google/gemini-2.5-pro";
 
-  // Standard: specific policy questions, sector analysis, moderate complexity
   const isModerate =
-    q.includes("incentive") ||
-    q.includes("subsidy") ||
-    q.includes("sgst") ||
-    q.includes("pli") ||
-    q.includes("mega project") ||
-    q.includes("defense corridor") ||
-    q.includes("bundelkhand") ||
-    q.includes("poorvanchal") ||
-    len > 150;
+    q.includes("incentive") || q.includes("subsidy") || q.includes("sgst") ||
+    q.includes("pli") || q.includes("mega project") || q.includes("defense corridor") ||
+    q.includes("bundelkhand") || q.includes("poorvanchal") || len > 150;
 
-  if (isModerate) {
-    return "google/gemini-3-flash-preview";
-  }
+  if (isModerate) return "google/gemini-3-flash-preview";
 
-  // Simple/short queries — use the fastest model
   return "google/gemini-2.5-flash";
 }
 
 export type ChatMsg = { role: "user" | "assistant"; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+const MAX_RETRIES = 2;
+const RETRY_DELAY = 1500;
+
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit,
+  retries: number = MAX_RETRIES
+): Promise<Response> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const resp = await fetch(url, options);
+      // Don't retry client errors (4xx) except 429
+      if (resp.ok || (resp.status >= 400 && resp.status < 500 && resp.status !== 429)) {
+        return resp;
+      }
+      // Retry on 429 and 5xx
+      if (attempt < retries) {
+        await new Promise((r) => setTimeout(r, RETRY_DELAY * (attempt + 1)));
+        continue;
+      }
+      return resp;
+    } catch (e: any) {
+      if (e.name === "AbortError") throw e;
+      if (attempt < retries) {
+        await new Promise((r) => setTimeout(r, RETRY_DELAY * (attempt + 1)));
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error("Max retries exceeded");
+}
 
 export async function streamChat({
   messages,
-  model: _userModel, // ignored — auto-selected internally
+  model: _userModel,
   onDelta,
   onDone,
   onError,
@@ -123,41 +138,74 @@ export async function streamChat({
   onError: (error: string) => void;
   signal?: AbortSignal;
 }) {
-  // Check if latest user message can be answered locally
-  const lastUserMsg = messages[messages.length - 1];
-  if (lastUserMsg?.role === "user") {
-    const localAnswer = tryLocalResponse(lastUserMsg.content);
-    if (localAnswer) {
-      // Simulate brief "thinking" then deliver locally
-      await new Promise((r) => setTimeout(r, 300 + Math.random() * 400));
-      onDelta(localAnswer);
-      onDone();
-      return;
-    }
+  // Validate input
+  if (!messages || messages.length === 0) {
+    onError("No messages to send.");
+    return;
   }
 
-  // Auto-select best model for this query
-  const bestModel = autoSelectModel(lastUserMsg?.content || "");
+  const lastUserMsg = messages[messages.length - 1];
+  if (!lastUserMsg || lastUserMsg.role !== "user" || !lastUserMsg.content.trim()) {
+    onError("Please enter a message.");
+    return;
+  }
+
+  // Trim overly long messages client-side
+  const sanitizedMessages = messages.map((m) => ({
+    role: m.role,
+    content: m.content.slice(0, 4000),
+  }));
+
+  // Keep conversation context manageable (last 40 messages)
+  const trimmedMessages = sanitizedMessages.slice(-40);
+
+  // Try local response first
+  const localAnswer = tryLocalResponse(lastUserMsg.content);
+  if (localAnswer) {
+    await new Promise((r) => setTimeout(r, 300 + Math.random() * 400));
+    if (signal?.aborted) { onDone(); return; }
+    onDelta(localAnswer);
+    onDone();
+    return;
+  }
+
+  const bestModel = autoSelectModel(lastUserMsg.content);
 
   try {
-    const resp = await fetch(CHAT_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-      },
-      body: JSON.stringify({ messages, model: bestModel }),
-      signal,
-    });
+    const resp = await fetchWithRetry(
+      CHAT_URL,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ messages: trimmedMessages, model: bestModel }),
+        signal,
+      }
+    );
 
     if (!resp.ok) {
-      const errorData = await resp.json().catch(() => ({ error: "Request failed" }));
-      onError(errorData.error || `Error ${resp.status}`);
+      let errorMsg = "Something went wrong. Please try again.";
+      try {
+        const errorData = await resp.json();
+        errorMsg = errorData.error || errorMsg;
+      } catch { /* use default */ }
+
+      if (resp.status === 429) {
+        errorMsg = "Too many requests. Please wait a moment and try again.";
+      } else if (resp.status === 402) {
+        errorMsg = "AI service credits exhausted. Please try again later.";
+      } else if (resp.status === 504) {
+        errorMsg = "Request timed out. Try asking a shorter question.";
+      }
+
+      onError(errorMsg);
       return;
     }
 
     if (!resp.body) {
-      onError("No response stream");
+      onError("No response received from AI. Please try again.");
       return;
     }
 
@@ -165,6 +213,7 @@ export async function streamChat({
     const decoder = new TextDecoder();
     let textBuffer = "";
     let streamDone = false;
+    let receivedAnyContent = false;
 
     while (!streamDone) {
       const { done, value } = await reader.read();
@@ -189,7 +238,10 @@ export async function streamChat({
         try {
           const parsed = JSON.parse(jsonStr);
           const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-          if (content) onDelta(content);
+          if (content) {
+            receivedAnyContent = true;
+            onDelta(content);
+          }
         } catch {
           textBuffer = line + "\n" + textBuffer;
           break;
@@ -209,9 +261,18 @@ export async function streamChat({
         try {
           const parsed = JSON.parse(jsonStr);
           const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-          if (content) onDelta(content);
-        } catch { /* ignore */ }
+          if (content) {
+            receivedAnyContent = true;
+            onDelta(content);
+          }
+        } catch { /* ignore partial leftovers */ }
       }
+    }
+
+    // If stream completed but no content was received, that's an error
+    if (!receivedAnyContent) {
+      onError("AI returned an empty response. Please try rephrasing your question.");
+      return;
     }
 
     onDone();
@@ -220,6 +281,11 @@ export async function streamChat({
       onDone();
       return;
     }
-    onError(e.message || "Connection failed");
+    // Network errors
+    if (!navigator.onLine) {
+      onError("You appear to be offline. Please check your internet connection.");
+    } else {
+      onError("Connection failed. Please check your internet and try again.");
+    }
   }
 }
