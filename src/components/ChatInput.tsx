@@ -33,7 +33,7 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="glass border-t-0 p-3 md:p-4 relative z-[55]"
+      className="border-t border-border bg-background p-3 md:p-4 relative z-[55]"
     >
       <div className="flex items-end gap-2 max-w-3xl mx-auto">
         <div className="flex-1 relative">
@@ -48,7 +48,7 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
               }
             }}
             placeholder="Ask about incentives, risks, comparisons, land policy..."
-            className="w-full resize-none bg-card border border-border rounded-2xl px-4 py-3 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all scrollbar-thin shadow-glass"
+            className="w-full resize-none bg-secondary/50 border border-border rounded-2xl px-4 py-3 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 transition-all scrollbar-thin"
             rows={1}
             disabled={disabled}
           />
@@ -58,7 +58,7 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
           onClick={handleSubmit}
           disabled={!value.trim() || disabled}
           size="icon"
-          className="rounded-2xl h-11 w-11 shrink-0 gradient-cta shadow-float hover:shadow-glass-lg transition-all disabled:opacity-30"
+          className="rounded-2xl h-11 w-11 shrink-0 bg-foreground text-background hover:bg-foreground/90 shadow-float transition-all disabled:opacity-30"
         >
           <Send className="w-4 h-4" />
         </Button>

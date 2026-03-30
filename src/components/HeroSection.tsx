@@ -24,8 +24,8 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         transition={{ duration: 0.6 }}
         className="mb-6"
       >
-        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-medium text-tint tracking-wide">
-          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border bg-secondary/50 text-xs font-medium text-foreground/60 tracking-wide">
+          <span className="w-1.5 h-1.5 rounded-full bg-foreground animate-pulse" />
           AI-POWERED POLICY ADVISORY
         </span>
       </motion.div>
@@ -35,17 +35,16 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.1 }}
-        className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-3 leading-[1.1] text-center"
+        className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-3 leading-[1.1] text-center text-foreground"
       >
-        <span className="text-foreground">UP IIEPP</span>{" "}
-        <span className="text-gradient-hero">2022</span>
+        UP IIEPP 2022
       </motion.h1>
 
       <motion.p
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.15 }}
-        className="text-2xl md:text-3xl font-bold text-foreground/80 mb-4 text-center"
+        className="text-2xl md:text-3xl font-bold text-foreground/70 mb-4 text-center"
         style={{ fontFamily: "'DM Serif Display', serif" }}
       >
         Policy Advisor
@@ -71,7 +70,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         <Button
           onClick={onStart}
           size="lg"
-          className="h-14 px-8 text-base font-semibold rounded-2xl gradient-cta shadow-float hover:shadow-glass-lg transition-all duration-300 group text-primary-foreground"
+          className="h-14 px-8 text-base font-semibold rounded-2xl bg-foreground text-background hover:bg-foreground/90 shadow-float transition-all duration-300 group"
         >
           Start Advisory Session
           <ArrowRight className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" />
@@ -91,9 +90,9 @@ export function HeroSection({ onStart }: HeroSectionProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 + i * 0.1 }}
-            className="glass rounded-2xl p-4 hover:shadow-glass-lg transition-all group text-center"
+            className="rounded-2xl border border-border bg-card p-4 hover:shadow-glass-lg transition-all group text-center"
           >
-            <stat.icon className="w-4 h-4 text-tint mb-2 mx-auto group-hover:scale-110 transition-transform" />
+            <stat.icon className="w-4 h-4 text-foreground/50 mb-2 mx-auto group-hover:scale-110 transition-transform" />
             <div className="text-lg font-bold text-foreground">{stat.value}</div>
             <div className="text-xs text-muted-foreground mt-0.5">{stat.label}</div>
           </motion.div>
@@ -106,7 +105,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.1 }}
         transition={{ duration: 0.7 }}
-        className="mt-14 max-w-3xl w-full glass-strong rounded-3xl overflow-hidden"
+        className="mt-14 max-w-3xl w-full rounded-3xl overflow-hidden border border-border bg-card"
       >
         <div className="w-full aspect-video bg-muted/30">
           <img

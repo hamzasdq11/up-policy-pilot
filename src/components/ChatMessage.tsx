@@ -34,22 +34,22 @@ const mdComponents = (isRisk: boolean) => ({
   ol: ({ children }: any) => <ol className="space-y-1 my-1 list-decimal list-inside">{children}</ol>,
   li: ({ children }: any) => (
     <li className="flex gap-2">
-      <span className={cn("mt-0.5 shrink-0", isRisk ? "text-destructive" : "text-tint")}>
+      <span className={cn("mt-0.5 shrink-0", isRisk ? "text-destructive" : "text-foreground/40")}>
         {isRisk ? "▸" : "•"}
       </span>
       <span className="flex-1">{children}</span>
     </li>
   ),
   table: ({ children }: any) => (
-    <div className="overflow-x-auto my-3 rounded-xl glass-subtle border border-border">
+    <div className="overflow-x-auto my-3 rounded-xl border border-border">
       <table className="w-full text-xs border-collapse">{children}</table>
     </div>
   ),
-  thead: ({ children }: any) => <thead className="bg-tint-light">{children}</thead>,
+  thead: ({ children }: any) => <thead className="bg-secondary">{children}</thead>,
   tbody: ({ children }: any) => <tbody>{children}</tbody>,
   tr: ({ children }: any) => <tr className="border-b border-border/50 last:border-0">{children}</tr>,
   th: ({ children }: any) => (
-    <th className="px-3 py-2.5 text-left font-semibold text-tint text-[11px] uppercase tracking-wider border-b border-border whitespace-nowrap">
+    <th className="px-3 py-2.5 text-left font-semibold text-foreground text-[11px] uppercase tracking-wider border-b border-border whitespace-nowrap">
       {children}
     </th>
   ),
@@ -58,41 +58,41 @@ const mdComponents = (isRisk: boolean) => ({
       {children}
     </td>
   ),
-  h3: ({ children }: any) => <h3 className="text-sm font-semibold text-tint mt-2 mb-1">{children}</h3>,
+  h3: ({ children }: any) => <h3 className="text-sm font-semibold text-foreground mt-2 mb-1">{children}</h3>,
   code: ({ children }: any) => (
-    <code className="bg-secondary px-1.5 py-0.5 rounded text-xs font-mono text-tint">{children}</code>
+    <code className="bg-secondary px-1.5 py-0.5 rounded text-xs font-mono text-foreground">{children}</code>
   ),
   blockquote: ({ children }: any) => (
-    <blockquote className="border-l-2 border-tint/30 pl-3 my-2 text-muted-foreground italic">{children}</blockquote>
+    <blockquote className="border-l-2 border-border pl-3 my-2 text-muted-foreground italic">{children}</blockquote>
   ),
   a: ({ children, href }: any) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="text-tint underline underline-offset-2 hover:text-primary transition-colors">
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-foreground underline underline-offset-2 hover:text-foreground/70 transition-colors">
       {children}
     </a>
   ),
 });
 
 const simpleMdComponents = {
-  strong: ({ children }: any) => <strong className="font-semibold text-tint">{children}</strong>,
+  strong: ({ children }: any) => <strong className="font-semibold text-foreground">{children}</strong>,
   p: ({ children }: any) => <p className="mb-2 last:mb-0">{children}</p>,
   ul: ({ children }: any) => <ul className="space-y-1 my-2">{children}</ul>,
   ol: ({ children }: any) => <ol className="space-y-1 my-2 list-decimal list-inside">{children}</ol>,
   li: ({ children }: any) => (
     <li className="flex gap-2">
-      <span className="text-tint mt-0.5 shrink-0">•</span>
+      <span className="text-foreground/40 mt-0.5 shrink-0">•</span>
       <span className="flex-1">{children}</span>
     </li>
   ),
   table: ({ children }: any) => (
-    <div className="overflow-x-auto my-3 rounded-xl glass-subtle border border-border">
+    <div className="overflow-x-auto my-3 rounded-xl border border-border">
       <table className="w-full text-xs border-collapse">{children}</table>
     </div>
   ),
-  thead: ({ children }: any) => <thead className="bg-tint-light">{children}</thead>,
+  thead: ({ children }: any) => <thead className="bg-secondary">{children}</thead>,
   tbody: ({ children }: any) => <tbody>{children}</tbody>,
   tr: ({ children }: any) => <tr className="border-b border-border/50 last:border-0">{children}</tr>,
   th: ({ children }: any) => (
-    <th className="px-3 py-2.5 text-left font-semibold text-tint text-[11px] uppercase tracking-wider border-b border-border whitespace-nowrap">
+    <th className="px-3 py-2.5 text-left font-semibold text-foreground text-[11px] uppercase tracking-wider border-b border-border whitespace-nowrap">
       {children}
     </th>
   ),
@@ -101,9 +101,9 @@ const simpleMdComponents = {
       {children}
     </td>
   ),
-  h3: ({ children }: any) => <h3 className="text-sm font-semibold text-tint mt-2 mb-1">{children}</h3>,
+  h3: ({ children }: any) => <h3 className="text-sm font-semibold text-foreground mt-2 mb-1">{children}</h3>,
   a: ({ children, href }: any) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="text-tint underline underline-offset-2">
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-foreground underline underline-offset-2">
       {children}
     </a>
   ),
@@ -122,30 +122,30 @@ export function ChatMessage({ role, content, isTyping }: ChatMessageProps) {
       <div
         className={cn(
           "flex-shrink-0 w-9 h-9 rounded-2xl flex items-center justify-center mt-1",
-          isUser ? "gradient-cta shadow-float" : "glass"
+          isUser ? "bg-foreground shadow-float" : "border border-border bg-card"
         )}
       >
         {isUser ? (
-          <User className="w-4 h-4 text-primary-foreground" />
+          <User className="w-4 h-4 text-background" />
         ) : (
-          <Bot className="w-4 h-4 text-tint" />
+          <Bot className="w-4 h-4 text-foreground" />
         )}
       </div>
       <div
         className={cn(
           "max-w-[88%] md:max-w-[78%]",
           isUser
-            ? "gradient-cta text-primary-foreground rounded-2xl rounded-tr-lg px-4 py-3 shadow-glass"
+            ? "bg-foreground text-background rounded-2xl rounded-tr-lg px-4 py-3 shadow-glass"
             : ""
         )}
       >
         {isTyping ? (
-          <div className="glass rounded-2xl rounded-tl-lg px-5 py-4">
+          <div className="border border-border bg-card rounded-2xl rounded-tl-lg px-5 py-4">
             <div className="flex items-center gap-2">
               <div className="flex gap-1.5">
-                <span className="w-2 h-2 bg-tint rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="w-2 h-2 bg-tint rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                <span className="w-2 h-2 bg-tint rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                <span className="w-2 h-2 bg-foreground/30 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                <span className="w-2 h-2 bg-foreground/30 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                <span className="w-2 h-2 bg-foreground/30 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
               </div>
               <span className="text-xs text-muted-foreground ml-2">Analyzing policy...</span>
             </div>
@@ -165,7 +165,7 @@ function AssistantContent({ content }: { content: string }) {
 
   if (sections.length <= 1) {
     return (
-      <div className="glass rounded-2xl rounded-tl-lg px-5 py-4">
+      <div className="border border-border bg-card rounded-2xl rounded-tl-lg px-5 py-4">
         <div className="text-sm leading-relaxed">
           <ReactMarkdown remarkPlugins={[remarkGfm]} components={simpleMdComponents}>
             {content}
@@ -196,10 +196,8 @@ function AssistantContent({ content }: { content: string }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: i * 0.08 }}
             className={cn(
-              "glass rounded-2xl px-4 py-3",
-              isRisk ? "!border-destructive/15" :
-              isBenefit ? "!border-primary/15" :
-              isComparison ? "!border-primary/10" : ""
+              "border border-border bg-card rounded-2xl px-4 py-3",
+              isRisk ? "!border-destructive/20" : ""
             )}
           >
             {title && (
@@ -207,9 +205,7 @@ function AssistantContent({ content }: { content: string }) {
                 <span className={cn(
                   "flex items-center justify-center w-6 h-6 rounded-lg",
                   isRisk ? "bg-destructive/8 text-destructive" :
-                  isBenefit ? "bg-primary/8 text-tint" :
-                  isComparison ? "bg-primary/8 text-tint" :
-                  "bg-secondary text-tint"
+                  "bg-secondary text-foreground/60"
                 )}>
                   {icon}
                 </span>
