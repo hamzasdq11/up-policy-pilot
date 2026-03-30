@@ -140,7 +140,7 @@ export default function Index() {
 
   const handleReset = useCallback(() => {
     if (abortRef.current) abortRef.current.abort();
-    setMessages([{ id: "welcome-" + Date.now(), role: "assistant", content: welcomeMessage }]);
+    setMessages([{ id: "__welcome__" + Date.now(), role: "assistant", content: welcomeMessage }]);
     setShowQuickActions(true);
     setLastQuery("");
     setIsStreaming(false);
