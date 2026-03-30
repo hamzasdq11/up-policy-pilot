@@ -34,79 +34,76 @@ const mdComponents = (isRisk: boolean) => ({
   ol: ({ children }: any) => <ol className="space-y-1 my-1 list-decimal list-inside">{children}</ol>,
   li: ({ children }: any) => (
     <li className="flex gap-2">
-      <span className={cn("mt-0.5 shrink-0", isRisk ? "text-destructive" : "text-gold")}>
+      <span className={cn("mt-0.5 shrink-0", isRisk ? "text-destructive" : "text-tint")}>
         {isRisk ? "▸" : "•"}
       </span>
       <span className="flex-1">{children}</span>
     </li>
   ),
   table: ({ children }: any) => (
-    <div className="overflow-x-auto my-3 rounded-lg border border-border">
+    <div className="overflow-x-auto my-3 rounded-xl glass-subtle border border-border">
       <table className="w-full text-xs border-collapse">{children}</table>
     </div>
   ),
-  thead: ({ children }: any) => <thead className="bg-secondary/80">{children}</thead>,
+  thead: ({ children }: any) => <thead className="bg-tint-light">{children}</thead>,
   tbody: ({ children }: any) => <tbody>{children}</tbody>,
-  tr: ({ children }: any) => <tr className="border-b border-border/40 last:border-0">{children}</tr>,
+  tr: ({ children }: any) => <tr className="border-b border-border/50 last:border-0">{children}</tr>,
   th: ({ children }: any) => (
-    <th className="px-3 py-2.5 text-left font-semibold text-gold text-[11px] uppercase tracking-wider border-b border-border whitespace-nowrap">
+    <th className="px-3 py-2.5 text-left font-semibold text-tint text-[11px] uppercase tracking-wider border-b border-border whitespace-nowrap">
       {children}
     </th>
   ),
   td: ({ children }: any) => (
-    <td className="px-3 py-2 text-secondary-foreground border-b border-border/30 align-top">
+    <td className="px-3 py-2 text-foreground/80 border-b border-border/30 align-top">
       {children}
     </td>
   ),
-  h1: ({ children }: any) => <h1 className="text-base font-bold text-foreground mt-2 mb-1">{children}</h1>,
-  h2: ({ children }: any) => <h2 className="text-sm font-bold text-foreground mt-2 mb-1">{children}</h2>,
-  h3: ({ children }: any) => <h3 className="text-sm font-semibold text-gold mt-2 mb-1">{children}</h3>,
+  h3: ({ children }: any) => <h3 className="text-sm font-semibold text-tint mt-2 mb-1">{children}</h3>,
   code: ({ children }: any) => (
-    <code className="bg-secondary px-1.5 py-0.5 rounded text-xs font-mono text-gold">{children}</code>
+    <code className="bg-secondary px-1.5 py-0.5 rounded text-xs font-mono text-tint">{children}</code>
   ),
   blockquote: ({ children }: any) => (
-    <blockquote className="border-l-2 border-gold/40 pl-3 my-2 text-muted-foreground italic">{children}</blockquote>
+    <blockquote className="border-l-2 border-tint/30 pl-3 my-2 text-muted-foreground italic">{children}</blockquote>
   ),
-  hr: () => <hr className="border-border/50 my-3" />,
   a: ({ children, href }: any) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="text-gold underline underline-offset-2 hover:text-gold-light transition-colors">
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-tint underline underline-offset-2 hover:text-primary transition-colors">
       {children}
     </a>
   ),
 });
 
 const simpleMdComponents = {
-  strong: ({ children }: any) => <strong className="font-semibold text-gold">{children}</strong>,
+  strong: ({ children }: any) => <strong className="font-semibold text-tint">{children}</strong>,
   p: ({ children }: any) => <p className="mb-2 last:mb-0">{children}</p>,
   ul: ({ children }: any) => <ul className="space-y-1 my-2">{children}</ul>,
   ol: ({ children }: any) => <ol className="space-y-1 my-2 list-decimal list-inside">{children}</ol>,
   li: ({ children }: any) => (
     <li className="flex gap-2">
-      <span className="text-gold mt-0.5 shrink-0">•</span>
+      <span className="text-tint mt-0.5 shrink-0">•</span>
       <span className="flex-1">{children}</span>
     </li>
   ),
   table: ({ children }: any) => (
-    <div className="overflow-x-auto my-3 rounded-lg border border-border">
+    <div className="overflow-x-auto my-3 rounded-xl glass-subtle border border-border">
       <table className="w-full text-xs border-collapse">{children}</table>
     </div>
   ),
-  thead: ({ children }: any) => <thead className="bg-secondary/80">{children}</thead>,
+  thead: ({ children }: any) => <thead className="bg-tint-light">{children}</thead>,
   tbody: ({ children }: any) => <tbody>{children}</tbody>,
-  tr: ({ children }: any) => <tr className="border-b border-border/40 last:border-0">{children}</tr>,
+  tr: ({ children }: any) => <tr className="border-b border-border/50 last:border-0">{children}</tr>,
   th: ({ children }: any) => (
-    <th className="px-3 py-2.5 text-left font-semibold text-gold text-[11px] uppercase tracking-wider border-b border-border whitespace-nowrap">
+    <th className="px-3 py-2.5 text-left font-semibold text-tint text-[11px] uppercase tracking-wider border-b border-border whitespace-nowrap">
       {children}
     </th>
   ),
   td: ({ children }: any) => (
-    <td className="px-3 py-2 text-secondary-foreground border-b border-border/30 align-top">
+    <td className="px-3 py-2 text-foreground/80 border-b border-border/30 align-top">
       {children}
     </td>
   ),
-  h3: ({ children }: any) => <h3 className="text-sm font-semibold text-gold mt-2 mb-1">{children}</h3>,
+  h3: ({ children }: any) => <h3 className="text-sm font-semibold text-tint mt-2 mb-1">{children}</h3>,
   a: ({ children, href }: any) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="text-gold underline underline-offset-2">
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-tint underline underline-offset-2">
       {children}
     </a>
   ),
@@ -124,31 +121,31 @@ export function ChatMessage({ role, content, isTyping }: ChatMessageProps) {
     >
       <div
         className={cn(
-          "flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center mt-1 ring-1 ring-border",
-          isUser ? "gradient-gold shadow-gold" : "glass border border-border"
+          "flex-shrink-0 w-9 h-9 rounded-2xl flex items-center justify-center mt-1",
+          isUser ? "gradient-cta shadow-float" : "glass"
         )}
       >
         {isUser ? (
           <User className="w-4 h-4 text-primary-foreground" />
         ) : (
-          <Bot className="w-4 h-4 text-gold" />
+          <Bot className="w-4 h-4 text-tint" />
         )}
       </div>
       <div
         className={cn(
           "max-w-[88%] md:max-w-[78%]",
           isUser
-            ? "gradient-gold text-primary-foreground rounded-2xl rounded-tr-md px-4 py-3 shadow-gold"
+            ? "gradient-cta text-primary-foreground rounded-2xl rounded-tr-lg px-4 py-3 shadow-glass"
             : ""
         )}
       >
         {isTyping ? (
-          <div className="glass rounded-2xl rounded-tl-md border border-border px-5 py-4">
+          <div className="glass rounded-2xl rounded-tl-lg px-5 py-4">
             <div className="flex items-center gap-2">
               <div className="flex gap-1.5">
-                <span className="w-2 h-2 bg-gold rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="w-2 h-2 bg-gold rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                <span className="w-2 h-2 bg-gold rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                <span className="w-2 h-2 bg-tint rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                <span className="w-2 h-2 bg-tint rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                <span className="w-2 h-2 bg-tint rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
               </div>
               <span className="text-xs text-muted-foreground ml-2">Analyzing policy...</span>
             </div>
@@ -164,13 +161,11 @@ export function ChatMessage({ role, content, isTyping }: ChatMessageProps) {
 }
 
 function AssistantContent({ content }: { content: string }) {
-  // Split into sections based on bold headers with emoji
   const sections = content.split(/\n\n(?=\*\*[📋🎯✅⚠️📊])/);
 
   if (sections.length <= 1) {
-    // Simple message (like welcome, greetings, or streaming partial)
     return (
-      <div className="glass rounded-2xl rounded-tl-md border border-border px-5 py-4">
+      <div className="glass rounded-2xl rounded-tl-lg px-5 py-4">
         <div className="text-sm leading-relaxed">
           <ReactMarkdown remarkPlugins={[remarkGfm]} components={simpleMdComponents}>
             {content}
@@ -201,21 +196,20 @@ function AssistantContent({ content }: { content: string }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: i * 0.08 }}
             className={cn(
-              "glass rounded-xl border px-4 py-3",
-              isRisk ? "border-destructive/20" :
-              isBenefit ? "border-primary/20" :
-              isComparison ? "border-gold/15" :
-              "border-border"
+              "glass rounded-2xl px-4 py-3",
+              isRisk ? "!border-destructive/15" :
+              isBenefit ? "!border-primary/15" :
+              isComparison ? "!border-primary/10" : ""
             )}
           >
             {title && (
               <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border/50">
                 <span className={cn(
-                  "flex items-center justify-center w-6 h-6 rounded-md",
-                  isRisk ? "bg-destructive/10 text-destructive" :
-                  isBenefit ? "bg-primary/10 text-gold" :
-                  isComparison ? "bg-primary/10 text-gold" :
-                  "bg-secondary text-gold"
+                  "flex items-center justify-center w-6 h-6 rounded-lg",
+                  isRisk ? "bg-destructive/8 text-destructive" :
+                  isBenefit ? "bg-primary/8 text-tint" :
+                  isComparison ? "bg-primary/8 text-tint" :
+                  "bg-secondary text-tint"
                 )}>
                   {icon}
                 </span>
@@ -224,7 +218,7 @@ function AssistantContent({ content }: { content: string }) {
                 </span>
               </div>
             )}
-            <div className="text-sm leading-relaxed">
+            <div className="text-sm leading-relaxed text-foreground/80">
               <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents(isRisk)}>
                 {sectionContent}
               </ReactMarkdown>

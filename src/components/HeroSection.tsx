@@ -23,7 +23,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         transition={{ duration: 0.6 }}
         className="mb-6"
       >
-        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gold-dim bg-surface-elevated text-xs font-medium text-gold tracking-wide">
+        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-medium text-tint tracking-wide">
           <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
           AI-POWERED POLICY ADVISORY
         </span>
@@ -34,7 +34,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="w-20 h-20 rounded-2xl gradient-gold flex items-center justify-center shadow-gold-lg mb-8"
+        className="w-20 h-20 rounded-3xl gradient-cta flex items-center justify-center shadow-float mb-8"
       >
         <Building2 className="w-10 h-10 text-primary-foreground" />
       </motion.div>
@@ -47,7 +47,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4 leading-[1.1]"
       >
         <span className="text-foreground">UP IIEPP</span>{" "}
-        <span className="text-gradient-gold">2022</span>
+        <span className="text-gradient-hero">2022</span>
         <br />
         <span className="text-foreground text-3xl md:text-4xl lg:text-5xl">Policy Advisor</span>
       </motion.h1>
@@ -72,7 +72,7 @@ export function HeroSection({ onStart }: HeroSectionProps) {
         <Button
           onClick={onStart}
           size="lg"
-          className="h-14 px-8 text-base font-semibold rounded-2xl gradient-gold shadow-gold-lg hover:shadow-gold transition-all duration-300 group"
+          className="h-14 px-8 text-base font-semibold rounded-2xl gradient-cta shadow-float hover:shadow-glass-lg transition-all duration-300 group text-primary-foreground"
         >
           Start Advisory Session
           <ArrowRight className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" />
@@ -92,9 +92,9 @@ export function HeroSection({ onStart }: HeroSectionProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.8 + i * 0.1 }}
-            className="glass rounded-xl p-4 border border-border hover:border-gold-dim transition-colors group"
+            className="glass rounded-2xl p-4 hover:shadow-glass-lg transition-all group"
           >
-            <stat.icon className="w-4 h-4 text-gold mb-2 mx-auto group-hover:scale-110 transition-transform" />
+            <stat.icon className="w-4 h-4 text-tint mb-2 mx-auto group-hover:scale-110 transition-transform" />
             <div className="text-lg font-bold text-foreground">{stat.value}</div>
             <div className="text-xs text-muted-foreground mt-0.5">{stat.label}</div>
           </motion.div>

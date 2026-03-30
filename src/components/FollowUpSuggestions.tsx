@@ -27,7 +27,7 @@ export function FollowUpSuggestions({ suggestions, onSelect }: FollowUpSuggestio
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.2, delay: 0.4 + i * 0.05 }}
             onClick={() => onSelect(s)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-secondary/50 transition-all group"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass text-xs text-muted-foreground hover:text-foreground hover:shadow-glass-lg transition-all group"
           >
             {s}
             <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
