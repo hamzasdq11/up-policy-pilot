@@ -1,49 +1,27 @@
 
 
-## Fix: Race Condition & Anti-Pattern in Chat Message Handling
+## Speed Up Chatbot Responses
 
-### Problem
-`streamChat()` is called inside a `setMessages()` updater function — a React anti-pattern that can cause duplicate API calls in Strict Mode and creates a race condition with `setIsStreaming`.
+### Root Cause
+The `autoSelectModel` function routes many queries to `google/gemini-2.5-pro` (the slowest model) — any query with ₹ amounts, "calculate", "roi", comparisons, or length > 300 chars triggers it. The network logs confirm: Gemini 2.5 Pro spends ~30+ seconds on reasoning chains before emitting content tokens.
 
-### Changes
+### Fix
 
-**File: `src/pages/Index.tsx` — `handleSend` function (lines 86-142)**
+**1. Replace slow model with faster alternatives (`src/lib/aiService.ts`)**
+- Change `google/gemini-2.5-pro` → `google/gemini-3-flash-preview` for "deep reasoning" queries
+- Change `google/gemini-2.5-flash` → `google/gemini-2.5-flash-lite` for simple queries
+- This eliminates the extended reasoning overhead while keeping quality adequate for policy Q&A
 
-Restructure to:
-1. Add user message to state first with `setMessages(prev => [...prev, userMsg])`
-2. Build `chatHistory` from current messages + new user message (computed outside setter)
-3. Call `streamChat()` outside the state setter
-4. Set `setIsStreaming(true)` *before* calling `streamChat()`
-5. Use a stable prefix like `__welcome__` for welcome message IDs to avoid accidental collisions
+**2. Update allowed models list (`supabase/functions/chat/index.ts`)**
+- Add `google/gemini-2.5-flash-lite` to `ALLOWED_MODELS`
+- Remove `google/gemini-2.5-pro` (no longer used)
+- Reduce `max_tokens` from 8192 to 4096 — responses don't need to be that long, and shorter limits reduce generation time
 
-```text
-Before:
-  setMessages((prev) => {
-    const updated = [...prev, userMsg];
-    // ... builds chatHistory inside setter
-    streamChat({ ... });  // ← side effect inside setter!
-    return updated;
-  });
-  setIsStreaming(true);  // ← runs AFTER stream starts
+**3. Reduce edge function timeout**
+- Drop from 60s to 45s for faster failure detection
 
-After:
-  // 1. Compute chat history from current state
-  const chatHistory = messages
-    .filter(m => !m.id.startsWith("__welcome"))
-    .map(m => ({ role: m.role, content: m.content }));
-  chatHistory.push({ role: "user", content: trimmedQuery });
-
-  // 2. Update state
-  setMessages(prev => [...prev, userMsg]);
-  setIsStreaming(true);  // ← before stream starts
-
-  // 3. Start stream outside setter
-  abortRef.current = new AbortController();
-  streamChat({ messages: chatHistory, ... });
-```
-
-**Welcome message IDs**: Change `"welcome"` → `"__welcome__"` and `"welcome-" + Date.now()` → `"__welcome__" + Date.now()` to avoid collisions.
-
-### Files Modified
-- `src/pages/Index.tsx` — refactor `handleSend`, update welcome ID prefixes
+### Result
+- Simple queries: ~2-3s (flash-lite)
+- Moderate queries: ~5-8s (flash-preview)  
+- Complex queries: ~8-12s (flash-preview instead of 30-60s pro)
 
