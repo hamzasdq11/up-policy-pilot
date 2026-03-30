@@ -35,7 +35,7 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
       transition={{ duration: 0.4 }}
       className="border-t border-border bg-background p-3 md:p-4 relative z-[55]"
     >
-      <div className="flex items-end gap-2 max-w-4xl mx-auto">
+      <div className="flex items-end gap-2 max-w-5xl mx-auto">
         <div className="flex-1 relative">
           <textarea
             ref={textareaRef}
